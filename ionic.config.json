@@ -1,0 +1,7 @@
+{
+  "name": "agendoo-front",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
