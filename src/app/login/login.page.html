@@ -1,0 +1,70 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+    <div class="logo-section">
+      <h1 class="app-title">Agendoo</h1>
+      <p class="app-subtitle">Seu sistema de agendamento</p>
+    </div>
+
+    <div class="login-form-section">
+      <ion-card class="login-form-card">
+        <ion-card-header>
+          <ion-card-title class="form-title">
+            <ion-icon [name]="selectedLoginType === 'cliente' ? 'person-outline' : 'business-outline'"></ion-icon>
+            Login
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="segment-container">
+            <ion-segment
+              [value]="selectedLoginType"
+              (ionChange)="handleLoginTypeChange($event)"
+              class="login-segment"
+            >
+              <ion-segment-button value="cliente">
+                <ion-icon name="person-outline"></ion-icon>
+                <ion-label>Cliente</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="parceiro">
+                <ion-icon name="business-outline"></ion-icon>
+                <ion-label>Parceiro</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+
+          <form (ngSubmit)="handleLogin()" class="login-form">
+            <ion-item class="form-item">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">E-mail</ion-label>
+              <ion-input
+                type="email"
+                placeholder="seu@email.com"
+                [(ngModel)]="email"
+                required
+                name="email"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">Senha</ion-label>
+              <ion-input
+                type="password"
+                placeholder="Sua senha"
+                [(ngModel)]="password"
+                required
+                name="password"
+              ></ion-input>
+            </ion-item>
+
+            <div class="form-actions">
+              <ion-button expand="block" type="submit" class="login-button" [disabled]="!email || !password">
+                Entrar
+              </ion-button>
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>
+
