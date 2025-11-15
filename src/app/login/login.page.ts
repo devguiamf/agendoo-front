@@ -20,7 +20,7 @@ import {
 import { addIcons } from 'ionicons';
 import { personOutline, businessOutline, lockClosedOutline, mailOutline } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
-import { UserType } from '../models/user.types';
+import { UserType, LoginOutput } from '../models/user.types';
 
 @Component({
   selector: 'app-login',
@@ -72,11 +72,15 @@ export class LoginPage {
     await loading.present();
     this.isLoading = true;
     this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: async () => {
+      next: async (response) => {
         await loading.dismiss();
         this.isLoading = false;
         await this.showToast('Login realizado com sucesso!', 'success');
-        this.router.navigate(['/home']);
+        if (response.user.type === UserType.PRESTADOR) {
+          this.router.navigate(['/prestador/home']);
+        } else {
+          this.router.navigate(['/home']);
+        }
       },
       error: async (error) => {
         await loading.dismiss();

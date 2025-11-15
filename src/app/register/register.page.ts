@@ -119,7 +119,12 @@ export class RegisterPage {
         await loading.dismiss();
         this.isLoading = false;
         await this.showToast('Cadastro realizado com sucesso!', 'success');
-        this.router.navigate(['/home']);
+        const user = this.authService.getUser();
+        if (user?.type === UserType.PRESTADOR) {
+          this.router.navigate(['/prestador/home']);
+        } else {
+          this.router.navigate(['/home']);
+        }
       },
       error: async (error) => {
         await loading.dismiss();
