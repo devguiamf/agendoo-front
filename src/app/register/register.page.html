@@ -1,0 +1,143 @@
+<ion-content [fullscreen]="true" class="register-content">
+  <div class="register-container">
+    <div class="logo-section">
+      <h1 class="app-title">Agendoo</h1>
+      <p class="app-subtitle">Crie sua conta</p>
+    </div>
+
+    <div class="register-form-section">
+      <ion-card class="register-form-card">
+        <ion-card-header>
+          <ion-card-title class="form-title">
+            <ion-icon
+              [name]="selectedRegisterType === 'cliente' ? 'person-outline' : 'business-outline'"
+            ></ion-icon>
+            Cadastro
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="segment-container">
+            <ion-segment
+              [value]="selectedRegisterType"
+              (ionChange)="handleRegisterTypeChange($event)"
+              class="register-segment"
+            >
+              <ion-segment-button value="cliente">
+                <ion-icon name="person-outline"></ion-icon>
+                <ion-label>Cliente</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="parceiro">
+                <ion-icon name="business-outline"></ion-icon>
+                <ion-label>Prestador</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+
+          <form (ngSubmit)="handleRegister()" class="register-form">
+            <ion-item class="form-item">
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">Nome Completo</ion-label>
+              <ion-input
+                type="text"
+                placeholder="Seu nome completo"
+                [(ngModel)]="fullName"
+                required
+                name="fullName"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-icon name="call-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">Telefone</ion-label>
+              <ion-input
+                type="tel"
+                placeholder="(00) 00000-0000"
+                [(ngModel)]="phone"
+                required
+                name="phone"
+              ></ion-input>
+            </ion-item>
+
+            @if (selectedRegisterType === 'parceiro') {
+              <ion-item class="form-item">
+                <ion-icon name="document-text-outline" slot="start"></ion-icon>
+                <ion-label position="stacked">CPF/CNPJ</ion-label>
+                <ion-input
+                  type="text"
+                  placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                  [(ngModel)]="cpfCnpj"
+                  required
+                  name="cpfCnpj"
+                ></ion-input>
+              </ion-item>
+            }
+
+            <ion-item class="form-item">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">E-mail</ion-label>
+              <ion-input
+                type="email"
+                placeholder="seu@email.com"
+                [(ngModel)]="email"
+                required
+                name="email"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">Senha</ion-label>
+              <ion-input
+                type="password"
+                placeholder="Sua senha"
+                [(ngModel)]="password"
+                (ionInput)="validatePasswords()"
+                required
+                name="password"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item class="form-item" [class.error]="passwordMismatch">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-label position="stacked">Repetir Senha</ion-label>
+              <ion-input
+                type="password"
+                placeholder="Confirme sua senha"
+                [(ngModel)]="confirmPassword"
+                (ionInput)="validatePasswords()"
+                required
+                name="confirmPassword"
+              ></ion-input>
+            </ion-item>
+
+            @if (passwordMismatch) {
+              <div class="error-message">
+                <ion-icon name="alert-circle"></ion-icon>
+                As senhas não coincidem
+              </div>
+            }
+
+            <div class="form-actions">
+              <ion-button
+                expand="block"
+                type="submit"
+                class="register-button"
+                [disabled]="!isFormValid() || passwordMismatch"
+              >
+                Cadastrar
+              </ion-button>
+            </div>
+
+            <div class="link-section">
+              <p class="link-text">
+                Já tem uma conta?
+                <a (click)="navigateToLogin()" class="link">Entrar</a>
+              </p>
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>
+

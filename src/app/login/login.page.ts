@@ -60,5 +60,9 @@ export class LoginPage {
     // TODO: Implementar lógica de autenticação
     console.log('Login:', { type: this.selectedLoginType, email: this.email });
   }
+
+  public navigateToRegister(): void {
+    this.router.navigate(['/register']);
+  }
 }
 
