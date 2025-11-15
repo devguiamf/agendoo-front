@@ -14,6 +14,8 @@ import {
   IonIcon,
   IonSegment,
   IonSegmentButton,
+  ToastController,
+  LoadingController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,8 +27,8 @@ import {
   documentTextOutline,
   alertCircle,
 } from 'ionicons/icons';
-
-export type RegisterType = 'cliente' | 'parceiro';
+import { AuthService } from '../services/auth.service';
+import { UserType } from '../models/user.types';
 
 @Component({
   selector: 'app-register',
@@ -49,7 +51,7 @@ export type RegisterType = 'cliente' | 'parceiro';
   ],
 })
 export class RegisterPage {
-  public selectedRegisterType: RegisterType = 'cliente';
+  public selectedRegisterType: UserType = UserType.CLIENTE;
   public fullName: string = '';
   public phone: string = '';
   public cpfCnpj: string = '';
@@ -57,8 +59,14 @@ export class RegisterPage {
   public password: string = '';
   public confirmPassword: string = '';
   public passwordMismatch: boolean = false;
+  public isLoading: boolean = false;
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService,
+    private readonly toastController: ToastController,
+    private readonly loadingController: LoadingController,
+  ) {
     addIcons({
       personOutline,
       businessOutline,
@@ -71,7 +79,7 @@ export class RegisterPage {
   }
 
   public handleRegisterTypeChange(event: CustomEvent): void {
-    this.selectedRegisterType = event.detail.value as RegisterType;
+    this.selectedRegisterType = event.detail.value as UserType;
     this.resetForm();
   }
 
@@ -79,26 +87,51 @@ export class RegisterPage {
     this.passwordMismatch = this.password !== this.confirmPassword && this.confirmPassword.length > 0;
   }
 
-  public handleRegister(): void {
+  public async handleRegister(): Promise<void> {
     if (!this.isFormValid()) {
+      await this.showToast('Por favor, preencha todos os campos obrigatórios', 'warning');
       return;
     }
     if (this.password !== this.confirmPassword) {
       this.passwordMismatch = true;
+      await this.showToast('As senhas não coincidem', 'warning');
       return;
     }
-    // TODO: Implementar lógica de cadastro
-    console.log('Register:', {
-      type: this.selectedRegisterType,
-      fullName: this.fullName,
-      phone: this.phone,
-      cpfCnpj: this.selectedRegisterType === 'parceiro' ? this.cpfCnpj : undefined,
+    if (this.password.length < 6) {
+      await this.showToast('A senha deve ter no mínimo 6 caracteres', 'warning');
+      return;
+    }
+    const loading = await this.loadingController.create({
+      message: 'Cadastrando...',
+    });
+    await loading.present();
+    this.isLoading = true;
+    const signupDto = {
+      name: this.fullName,
       email: this.email,
+      password: this.password,
+      type: this.selectedRegisterType,
+      phone: this.phone,
+      cpf: this.selectedRegisterType === UserType.PRESTADOR ? this.cpfCnpj : undefined,
+    };
+    this.authService.signup(signupDto).subscribe({
+      next: async () => {
+        await loading.dismiss();
+        this.isLoading = false;
+        await this.showToast('Cadastro realizado com sucesso!', 'success');
+        this.router.navigate(['/home']);
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isLoading = false;
+        const errorMessage = error.error?.message || 'Erro ao realizar cadastro. Tente novamente.';
+        await this.showToast(errorMessage, 'danger');
+      },
     });
   }
 
   public isFormValid(): boolean {
-    if (this.selectedRegisterType === 'cliente') {
+    if (this.selectedRegisterType === UserType.CLIENTE) {
       return !!(
         this.fullName &&
         this.phone &&
@@ -122,7 +155,6 @@ export class RegisterPage {
     this.router.navigate(['/login']);
   }
 
-
   private resetForm(): void {
     this.fullName = '';
     this.phone = '';
@@ -131,6 +163,16 @@ export class RegisterPage {
     this.password = '';
     this.confirmPassword = '';
     this.passwordMismatch = false;
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top',
+    });
+    await toast.present();
   }
 }
 

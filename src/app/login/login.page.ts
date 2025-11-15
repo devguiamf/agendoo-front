@@ -14,11 +14,13 @@ import {
   IonIcon,
   IonSegment,
   IonSegmentButton,
+  ToastController,
+  LoadingController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { personOutline, businessOutline, lockClosedOutline, mailOutline } from 'ionicons/icons';
-
-export type LoginType = 'cliente' | 'parceiro';
+import { AuthService } from '../services/auth.service';
+import { UserType } from '../models/user.types';
 
 @Component({
   selector: 'app-login',
@@ -41,28 +43,62 @@ export type LoginType = 'cliente' | 'parceiro';
   ],
 })
 export class LoginPage {
-  public selectedLoginType: LoginType = 'cliente';
+  public selectedLoginType: UserType = UserType.CLIENTE;
   public email: string = '';
   public password: string = '';
+  public isLoading: boolean = false;
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService,
+    private readonly toastController: ToastController,
+    private readonly loadingController: LoadingController,
+  ) {
     addIcons({ personOutline, businessOutline, lockClosedOutline, mailOutline });
   }
 
   public handleLoginTypeChange(event: CustomEvent): void {
-    this.selectedLoginType = event.detail.value as LoginType;
+    this.selectedLoginType = event.detail.value as UserType;
   }
 
-  public handleLogin(): void {
+  public async handleLogin(): Promise<void> {
     if (!this.email || !this.password) {
+      await this.showToast('Por favor, preencha todos os campos', 'warning');
       return;
     }
-    // TODO: Implementar lógica de autenticação
-    console.log('Login:', { type: this.selectedLoginType, email: this.email });
+    const loading = await this.loadingController.create({
+      message: 'Entrando...',
+    });
+    await loading.present();
+    this.isLoading = true;
+    this.authService.login({ email: this.email, password: this.password }).subscribe({
+      next: async () => {
+        await loading.dismiss();
+        this.isLoading = false;
+        await this.showToast('Login realizado com sucesso!', 'success');
+        this.router.navigate(['/home']);
+      },
+      error: async (error) => {
+        await loading.dismiss();
+        this.isLoading = false;
+        const errorMessage = error.error?.message || 'Erro ao fazer login. Verifique suas credenciais.';
+        await this.showToast(errorMessage, 'danger');
+      },
+    });
   }
 
   public navigateToRegister(): void {
     this.router.navigate(['/register']);
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top',
+    });
+    await toast.present();
   }
 }
 

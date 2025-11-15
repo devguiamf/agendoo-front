@@ -24,9 +24,9 @@
                 <ion-icon name="person-outline"></ion-icon>
                 <ion-label>Cliente</ion-label>
               </ion-segment-button>
-              <ion-segment-button value="parceiro">
+              <ion-segment-button value="prestador">
                 <ion-icon name="business-outline"></ion-icon>
-                <ion-label>Parceiro</ion-label>
+                <ion-label>Prestador</ion-label>
               </ion-segment-button>
             </ion-segment>
           </div>
@@ -57,8 +57,8 @@
             </ion-item>
 
             <div class="form-actions">
-              <ion-button expand="block" type="submit" class="login-button" [disabled]="!email || !password">
-                Entrar
+              <ion-button expand="block" type="submit" class="login-button" [disabled]="!email || !password || isLoading">
+                {{ isLoading ? 'Entrando...' : 'Entrar' }}
               </ion-button>
             </div>
 
