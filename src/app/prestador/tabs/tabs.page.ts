@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { homeOutline, personOutline, settingsOutline, businessOutline } from 'ionicons/icons';
 
@@ -7,9 +7,11 @@ import { homeOutline, personOutline, settingsOutline, businessOutline } from 'io
   selector: 'app-prestador-tabs',
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
 })
 export class PrestadorTabsPage {
+  public environmentInjector = inject(EnvironmentInjector);
+
   constructor() {
     addIcons({ homeOutline, personOutline, settingsOutline, businessOutline });
   }
