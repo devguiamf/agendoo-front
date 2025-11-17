@@ -1,0 +1,180 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ isEditMode ? 'Editar Loja' : 'Criar Loja' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="handleCancel()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="handleSave()" class="edit-form">
+    <ion-item>
+      <ion-icon name="storefront-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Nome da Loja</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Nome do estabelecimento"
+        [(ngModel)]="storeForm.name"
+        required
+        name="name"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="image-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">URL da Imagem (opcional)</ion-label>
+      <ion-input
+        type="url"
+        placeholder="https://exemplo.com/imagem.jpg"
+        [(ngModel)]="storeForm.imageUrl"
+        name="imageUrl"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="time-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Intervalo entre Agendamentos</ion-label>
+      <ion-select [(ngModel)]="storeForm.appointmentInterval" name="appointmentInterval">
+        @for (interval of appointmentIntervals; track interval.value) {
+          <ion-select-option [value]="interval.value">{{ interval.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <div class="section-title">
+      <ion-icon name="location-outline"></ion-icon>
+      <h3>Localização</h3>
+    </div>
+
+    <ion-item>
+      <ion-label position="stacked">Rua</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Nome da rua"
+        [(ngModel)]="storeForm.location.street"
+        required
+        name="street"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Número</ion-label>
+      <ion-input
+        type="text"
+        placeholder="123"
+        [(ngModel)]="storeForm.location.number"
+        required
+        name="number"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Complemento (opcional)</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Apto, Bloco, etc."
+        [(ngModel)]="storeForm.location.complement"
+        name="complement"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Bairro</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Nome do bairro"
+        [(ngModel)]="storeForm.location.neighborhood"
+        required
+        name="neighborhood"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Cidade</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Nome da cidade"
+        [(ngModel)]="storeForm.location.city"
+        required
+        name="city"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Estado (UF)</ion-label>
+      <ion-input
+        type="text"
+        placeholder="SP"
+        maxlength="2"
+        [(ngModel)]="storeForm.location.state"
+        required
+        name="state"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">CEP</ion-label>
+      <ion-input
+        type="text"
+        placeholder="12345-678"
+        [(ngModel)]="storeForm.location.zipCode"
+        required
+        name="zipCode"
+      ></ion-input>
+    </ion-item>
+
+    <div class="section-title">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <h3>Horários de Funcionamento</h3>
+    </div>
+
+    @for (day of daysOfWeek; track day.value) {
+      @let wh = getWorkingHoursForDay(day.value);
+      <div class="working-hours-day">
+        <ion-item>
+          <ion-checkbox
+            [checked]="wh.isOpen"
+            (ionChange)="updateWorkingHoursDay(day.value, 'isOpen', $event.detail.checked)"
+            [name]="'isOpen' + day.value"
+          ></ion-checkbox>
+          <ion-label>{{ day.label }}</ion-label>
+        </ion-item>
+        @if (wh.isOpen) {
+          <div class="time-inputs">
+            <ion-item>
+              <ion-label position="stacked">Abertura</ion-label>
+              <ion-input
+                type="time"
+                [value]="wh.openTime"
+                (ionInput)="updateWorkingHoursDay(day.value, 'openTime', $event.detail.value)"
+                [name]="'openTime' + day.value"
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Fechamento</ion-label>
+              <ion-input
+                type="time"
+                [value]="wh.closeTime"
+                (ionInput)="updateWorkingHoursDay(day.value, 'closeTime', $event.detail.value)"
+                [name]="'closeTime' + day.value"
+              ></ion-input>
+            </ion-item>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Salvando...' : (isEditMode ? 'Salvar Alterações' : 'Criar Loja') }}
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="handleCancel()" [disabled]="isLoading">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
+

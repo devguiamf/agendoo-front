@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
+import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { homeOutline, personOutline, settingsOutline, businessOutline } from 'ionicons/icons';
 
@@ -7,7 +7,7 @@ import { homeOutline, personOutline, settingsOutline, businessOutline } from 'io
   selector: 'app-prestador-tabs',
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet, IonContent],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet],
 })
 export class PrestadorTabsPage {
   constructor() {
