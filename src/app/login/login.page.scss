@@ -74,52 +74,6 @@
   color: var(--ion-color-primary);
 }
 
-.segment-container {
-  margin: 1.5rem 0 2rem 0;
-  padding: 0 0.5rem;
-}
-
-.login-segment {
-  --background: var(--ion-color-light);
-  border-radius: 12px;
-  padding: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.login-segment ion-segment-button {
-  --indicator-color: var(--ion-color-primary);
-  --color: var(--ion-color-medium);
-  --color-checked: #ffffff;
-  --indicator-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  min-height: 48px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.login-segment ion-segment-button ion-icon {
-  font-size: 1.2rem;
-  margin-right: 0.5rem;
-  color: var(--ion-color-medium);
-  transition: color 0.3s ease;
-}
-
-.login-segment ion-segment-button.segment-button-checked ion-icon,
-.login-segment ion-segment-button[checked] ion-icon {
-  color: var(--ion-color-primary) !important;
-}
-
-.login-segment ion-segment-button ion-label {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--ion-color-medium);
-  transition: color 0.3s ease;
-}
-
-.login-segment ion-segment-button.segment-button-checked ion-label,
-.login-segment ion-segment-button[checked] ion-label {
-  color: var(--ion-color-primary) !important;
-}
-
 .login-form {
   margin-top: 1rem;
 }
@@ -204,14 +158,6 @@
 
   .login-form-card {
     border-radius: 16px;
-  }
-
-  .login-segment ion-segment-button {
-    min-height: 44px;
-  }
-
-  .login-segment ion-segment-button ion-label {
-    font-size: 0.85rem;
   }
 }
 

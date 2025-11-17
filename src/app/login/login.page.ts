@@ -12,15 +12,13 @@ import {
   IonLabel,
   IonInput,
   IonIcon,
-  IonSegment,
-  IonSegmentButton,
   ToastController,
   LoadingController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { personOutline, businessOutline, lockClosedOutline, mailOutline } from 'ionicons/icons';
+import { logInOutline, lockClosedOutline, mailOutline } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
-import { UserType, LoginOutput } from '../models/user.types';
+import { UserType } from '../models/user.types';
 
 @Component({
   selector: 'app-login',
@@ -38,12 +36,9 @@ import { UserType, LoginOutput } from '../models/user.types';
     IonLabel,
     IonInput,
     IonIcon,
-    IonSegment,
-    IonSegmentButton,
   ],
 })
 export class LoginPage {
-  public selectedLoginType: UserType = UserType.CLIENTE;
   public email: string = '';
   public password: string = '';
   public isLoading: boolean = false;
@@ -54,11 +49,7 @@ export class LoginPage {
     private readonly toastController: ToastController,
     private readonly loadingController: LoadingController,
   ) {
-    addIcons({ personOutline, businessOutline, lockClosedOutline, mailOutline });
-  }
-
-  public handleLoginTypeChange(event: CustomEvent): void {
-    this.selectedLoginType = event.detail.value as UserType;
+    addIcons({ logInOutline, lockClosedOutline, mailOutline });
   }
 
   public async handleLogin(): Promise<void> {
