@@ -22,6 +22,7 @@ import {
   cashOutline,
   timeOutline,
   imageOutline,
+  linkOutline,
 } from 'ionicons/icons';
 import { ServiceService } from '../../../services/service.service';
 import {
@@ -59,6 +60,8 @@ export class EditarServicoModalComponent implements OnInit {
     imageUrl: '',
   };
   public isLoading: boolean = false;
+  public selectedImageFile: File | null = null;
+  public imagePreview: string | null = null;
 
   constructor(
     private readonly modalController: ModalController,
@@ -72,6 +75,7 @@ export class EditarServicoModalComponent implements OnInit {
       cashOutline,
       timeOutline,
       imageOutline,
+      linkOutline,
     });
   }
 
@@ -85,6 +89,9 @@ export class EditarServicoModalComponent implements OnInit {
         durationMinutes: this.service.durationMinutes || 30,
         imageUrl: this.service.imageUrl || '',
       };
+      if (this.service.imageUrl) {
+        this.imagePreview = this.service.imageUrl;
+      }
     }
   }
 
@@ -103,9 +110,9 @@ export class EditarServicoModalComponent implements OnInit {
         description: this.serviceForm.description,
         price: this.serviceForm.price,
         durationMinutes: this.serviceForm.durationMinutes,
-        imageUrl: this.serviceForm.imageUrl || undefined,
+        imageUrl: this.selectedImageFile ? undefined : (this.serviceForm.imageUrl || undefined),
       };
-      this.serviceService.update(this.service.id, updateDto).subscribe({
+      this.serviceService.update(this.service.id, updateDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
           await loading.dismiss();
           this.isLoading = false;
@@ -124,9 +131,9 @@ export class EditarServicoModalComponent implements OnInit {
         description: this.serviceForm.description,
         price: this.serviceForm.price,
         durationMinutes: this.serviceForm.durationMinutes,
-        imageUrl: this.serviceForm.imageUrl || undefined,
+        imageUrl: this.selectedImageFile ? undefined : (this.serviceForm.imageUrl || undefined),
       };
-      this.serviceService.create(createDto).subscribe({
+      this.serviceService.create(createDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
           await loading.dismiss();
           this.isLoading = false;
@@ -140,6 +147,30 @@ export class EditarServicoModalComponent implements OnInit {
         },
       });
     }
+  }
+
+  public onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type.startsWith('image/')) {
+        this.selectedImageFile = file;
+        this.serviceForm.imageUrl = '';
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.showToast('Por favor, selecione um arquivo de imagem', 'warning');
+        input.value = '';
+      }
+    }
+  }
+
+  public removeSelectedImage(): void {
+    this.selectedImageFile = null;
+    this.imagePreview = this.serviceForm.imageUrl || null;
   }
 
   public async handleCancel(): Promise<void> {

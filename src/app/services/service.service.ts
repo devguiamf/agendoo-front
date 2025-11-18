@@ -20,16 +20,52 @@ export class ServiceService {
     return this.http.get<ServiceOutput>(`${this.apiUrl}/${id}`);
   }
 
-  public create(createDto: CreateServiceDto): Observable<ServiceOutput> {
-    return this.http.post<ServiceOutput>(this.apiUrl, createDto);
+  public create(createDto: CreateServiceDto, file?: File): Observable<ServiceOutput> {
+    const formData = new FormData();
+    formData.append('title', createDto.title);
+    formData.append('description', createDto.description);
+    formData.append('price', createDto.price.toString());
+    formData.append('durationMinutes', createDto.durationMinutes.toString());
+    if (createDto.imageUrl && !file) {
+      formData.append('imageUrl', createDto.imageUrl);
+    }
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.post<ServiceOutput>(this.apiUrl, formData);
   }
 
-  public update(id: string, updateDto: UpdateServiceDto): Observable<ServiceOutput> {
-    return this.http.put<ServiceOutput>(`${this.apiUrl}/${id}`, updateDto);
+  public update(id: string, updateDto: UpdateServiceDto, file?: File): Observable<ServiceOutput> {
+    const formData = new FormData();
+    if (updateDto.title !== undefined) {
+      formData.append('title', updateDto.title);
+    }
+    if (updateDto.description !== undefined) {
+      formData.append('description', updateDto.description);
+    }
+    if (updateDto.price !== undefined) {
+      formData.append('price', updateDto.price.toString());
+    }
+    if (updateDto.durationMinutes !== undefined) {
+      formData.append('durationMinutes', updateDto.durationMinutes.toString());
+    }
+    if (updateDto.imageUrl && !file) {
+      formData.append('imageUrl', updateDto.imageUrl);
+    }
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.put<ServiceOutput>(`${this.apiUrl}/${id}`, formData);
   }
 
   public delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  public uploadImage(id: string, file: File): Observable<ServiceOutput> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ServiceOutput>(`${this.apiUrl}/${id}/upload-image`, formData);
   }
 }
 

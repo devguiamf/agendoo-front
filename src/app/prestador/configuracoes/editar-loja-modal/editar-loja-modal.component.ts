@@ -26,6 +26,7 @@ import {
   timeOutline,
   calendarOutline,
   imageOutline,
+  linkOutline,
 } from 'ionicons/icons';
 import { StoreService } from '../../../services/store.service';
 import {
@@ -79,6 +80,8 @@ export class EditarLojaModalComponent implements OnInit {
     imageUrl: '',
   };
   public isLoading: boolean = false;
+  public selectedImageFile: File | null = null;
+  public imagePreview: string | null = null;
   public daysOfWeek: Array<{ value: number; label: string }> = [
     { value: 0, label: 'Domingo' },
     { value: 1, label: 'Segunda-feira' },
@@ -109,6 +112,7 @@ export class EditarLojaModalComponent implements OnInit {
       timeOutline,
       calendarOutline,
       imageOutline,
+      linkOutline,
     });
   }
 
@@ -127,6 +131,9 @@ export class EditarLojaModalComponent implements OnInit {
         appointmentInterval: this.store.appointmentInterval,
         imageUrl: this.store.imageUrl || '',
       };
+      if (this.store.imageUrl) {
+        this.imagePreview = this.store.imageUrl;
+      }
     } else {
       this.storeForm.userId = currentUser.id;
       this.storeForm.workingHours = this.initializeWorkingHours();
@@ -174,9 +181,9 @@ export class EditarLojaModalComponent implements OnInit {
         workingHours: this.storeForm.workingHours,
         location: this.storeForm.location,
         appointmentInterval: this.storeForm.appointmentInterval,
-        imageUrl: this.storeForm.imageUrl || undefined,
+        imageUrl: this.selectedImageFile ? undefined : (this.storeForm.imageUrl || undefined),
       };
-      this.storeService.update(this.store.id, updateDto).subscribe({
+      this.storeService.update(this.store.id, updateDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
           await loading.dismiss();
           this.isLoading = false;
@@ -196,9 +203,9 @@ export class EditarLojaModalComponent implements OnInit {
         workingHours: this.storeForm.workingHours,
         location: this.storeForm.location,
         appointmentInterval: this.storeForm.appointmentInterval,
-        imageUrl: this.storeForm.imageUrl || undefined,
+        imageUrl: this.selectedImageFile ? undefined : (this.storeForm.imageUrl || undefined),
       };
-      this.storeService.create(createDto).subscribe({
+      this.storeService.create(createDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
           await loading.dismiss();
           this.isLoading = false;
@@ -212,6 +219,30 @@ export class EditarLojaModalComponent implements OnInit {
         },
       });
     }
+  }
+
+  public onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type.startsWith('image/')) {
+        this.selectedImageFile = file;
+        this.storeForm.imageUrl = '';
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.showToast('Por favor, selecione um arquivo de imagem', 'warning');
+        input.value = '';
+      }
+    }
+  }
+
+  public removeSelectedImage(): void {
+    this.selectedImageFile = null;
+    this.imagePreview = this.storeForm.imageUrl || null;
   }
 
   public async handleCancel(): Promise<void> {
