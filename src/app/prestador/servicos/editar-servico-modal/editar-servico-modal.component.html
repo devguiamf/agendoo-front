@@ -1,0 +1,87 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ isEditMode ? 'Editar Serviço' : 'Criar Serviço' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="handleCancel()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="handleSave()" class="edit-form">
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Título do Serviço</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Ex: Corte de Cabelo Masculino"
+        [(ngModel)]="serviceForm.title"
+        required
+        name="title"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Descrição</ion-label>
+      <ion-input
+        type="text"
+        placeholder="Descreva o serviço oferecido"
+        [(ngModel)]="serviceForm.description"
+        required
+        name="description"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="cash-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Preço (R$)</ion-label>
+      <ion-input
+        type="number"
+        placeholder="0.00"
+        [(ngModel)]="serviceForm.price"
+        min="0.01"
+        step="0.01"
+        required
+        name="price"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="time-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">Duração (minutos)</ion-label>
+      <ion-input
+        type="number"
+        placeholder="30"
+        [(ngModel)]="serviceForm.durationMinutes"
+        min="1"
+        max="1440"
+        required
+        name="durationMinutes"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="image-outline" slot="start"></ion-icon>
+      <ion-label position="stacked">URL da Imagem (opcional)</ion-label>
+      <ion-input
+        type="url"
+        placeholder="https://exemplo.com/imagem.jpg"
+        [(ngModel)]="serviceForm.imageUrl"
+        name="imageUrl"
+      ></ion-input>
+    </ion-item>
+
+    <div class="form-actions">
+      <ion-button expand="block" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Salvando...' : (isEditMode ? 'Salvar Alterações' : 'Criar Serviço') }}
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="handleCancel()" [disabled]="isLoading">
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
+</ion-content>
+
