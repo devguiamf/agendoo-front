@@ -152,6 +152,10 @@ export class PrestadorServicosPage implements OnInit {
     return `${hours}h ${mins}min`;
   }
 
+  public getServiceImage(service: ServiceOutput): string | null {
+    return service.imageBase64 || service.imageUrl || null;
+  }
+
   private async loadServices(): Promise<void> {
     this.isLoading = true;
     this.serviceService.getMyServices().subscribe({

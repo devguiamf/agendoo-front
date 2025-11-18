@@ -155,6 +155,10 @@ export class PrestadorConfiguracoesPage implements OnInit {
     return labels[interval] || `${interval} minutos`;
   }
 
+  public getStoreImage(store: StoreOutput): string | null {
+    return store.imageBase64 || store.imageUrl || null;
+  }
+
   private async loadStoreData(): Promise<void> {
     const currentUser = this.authService.getUser();
     if (!currentUser) {

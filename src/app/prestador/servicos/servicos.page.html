@@ -22,8 +22,8 @@
       <div class="services-list">
         @for (service of services; track service.id) {
           <ion-card class="service-card">
-            @if (service.imageUrl) {
-              <ion-img [src]="service.imageUrl" [alt]="service.title" class="service-image"></ion-img>
+            @if (getServiceImage(service)) {
+              <ion-img [src]="getServiceImage(service)!" [alt]="service.title" class="service-image"></ion-img>
             } @else {
               <div class="service-image-placeholder">
                 <ion-icon name="image-outline"></ion-icon>

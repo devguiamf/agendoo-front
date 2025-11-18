@@ -14,8 +14,8 @@
     <div class="store-container">
       <div class="store-header">
         <ion-avatar class="store-avatar">
-          @if (store.imageUrl) {
-            <img [src]="store.imageUrl" [alt]="store.name" />
+          @if (getStoreImage(store)) {
+            <img [src]="getStoreImage(store)!" [alt]="store.name" />
           } @else {
             <div class="avatar-placeholder">
               <ion-icon name="storefront-outline"></ion-icon>
