@@ -1,0 +1,93 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Meus Agendamentos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (isLoading) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+      <p>Carregando agendamentos...</p>
+    </div>
+  } @else if (activeAppointments.length > 0) {
+    <div class="appointments-container">
+      <div class="appointments-list">
+        @for (appointment of activeAppointments; track appointment.id) {
+          <ion-card class="appointment-card">
+            <ion-card-header>
+              <div class="card-header-content">
+                <ion-card-title>{{ getServiceName(appointment.serviceId) }}</ion-card-title>
+                <ion-badge [color]="getStatusColor(appointment.status)">
+                  {{ getStatusLabel(appointment.status) }}
+                </ion-badge>
+              </div>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list lines="none" class="appointment-info">
+                <ion-item lines="none" class="info-item">
+                  <ion-icon name="calendar-outline" slot="start" class="info-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Data e Hora</h3>
+                    <p>{{ formatDateTime(appointment.appointmentDate) }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="info-item">
+                  <ion-icon name="storefront-outline" slot="start" class="info-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Estabelecimento</h3>
+                    <p>{{ getStoreName(appointment.storeId) }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="info-item">
+                  <ion-icon name="location-outline" slot="start" class="info-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Endereço</h3>
+                    <p>{{ getStoreAddress(appointment.storeId) }}</p>
+                  </ion-label>
+                </ion-item>
+                @if (appointment.notes) {
+                  <ion-item lines="none" class="info-item">
+                    <ion-icon name="document-text-outline" slot="start" class="info-icon"></ion-icon>
+                    <ion-label>
+                      <h3>Observações</h3>
+                      <p>{{ appointment.notes }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+              <div class="appointment-actions">
+                @if (canCancel(appointment)) {
+                  <ion-button fill="outline" color="warning" size="small" (click)="handleCancel(appointment)">
+                    <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                    Cancelar
+                  </ion-button>
+                }
+                <ion-button fill="outline" color="danger" size="small" (click)="handleDelete(appointment)">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  Excluir
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-container">
+      <ion-card class="empty-card">
+        <ion-card-header>
+          <ion-card-title>Nenhum Agendamento Ativo</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="empty-content">
+            <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+            <p>Você não possui agendamentos ativos no momento.</p>
+            <p class="empty-description">Explore os estabelecimentos disponíveis e agende seus serviços.</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  }
+</ion-content>
+

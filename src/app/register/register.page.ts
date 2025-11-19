@@ -122,8 +122,10 @@ export class RegisterPage {
         const user = this.authService.getUser();
         if (user?.type === UserType.PRESTADOR) {
           this.router.navigate(['/prestador/home']);
+        } else if (user?.type === UserType.CLIENTE) {
+          this.router.navigate(['/cliente/busca']);
         } else {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/login']);
         }
       },
       error: async (error) => {

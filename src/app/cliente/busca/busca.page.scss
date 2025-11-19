@@ -1,0 +1,160 @@
+.search-container {
+  padding: 16px;
+  background: var(--ion-color-light);
+}
+
+.search-bar {
+  --background: white;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.stores-container {
+  padding: 16px;
+  padding-bottom: 100px;
+}
+
+.stores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.store-card {
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.store-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.store-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.store-image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.store-image-placeholder ion-icon {
+  font-size: 64px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.store-card ion-card-header {
+  padding-bottom: 8px;
+}
+
+.store-card ion-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}
+
+.store-info {
+  margin: 0;
+  padding: 0;
+}
+
+.info-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 12px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  font-size: 20px;
+  color: var(--ion-color-primary);
+  margin-right: 12px;
+}
+
+.info-item h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.info-item p {
+  font-size: 14px;
+  color: var(--ion-color-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.view-button {
+  margin-top: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 16px;
+}
+
+.loading-container p {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+}
+
+.empty-container {
+  padding: 32px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.empty-card {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
+}
+
+.empty-icon {
+  font-size: 80px;
+  color: var(--ion-color-medium);
+}
+
+.empty-description {
+  color: var(--ion-color-medium);
+  font-size: 14px;
+  margin-top: -8px;
+}
+
+ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
+

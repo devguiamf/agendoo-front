@@ -69,8 +69,10 @@ export class LoginPage {
         await this.showToast('Login realizado com sucesso!', 'success');
         if (response.user.type === UserType.PRESTADOR) {
           this.router.navigate(['/prestador/home']);
+        } else if (response.user.type === UserType.CLIENTE) {
+          this.router.navigate(['/cliente/busca']);
         } else {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/login']);
         }
       },
       error: async (error) => {

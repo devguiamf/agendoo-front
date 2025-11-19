@@ -20,4 +20,8 @@ export const routes: Routes = [
     path: 'prestador',
     loadChildren: () => import('./prestador/tabs/tabs.routes').then((m) => m.routes),
   },
+  {
+    path: 'cliente',
+    loadChildren: () => import('./cliente/tabs/tabs.routes').then((m) => m.routes),
+  },
 ];
