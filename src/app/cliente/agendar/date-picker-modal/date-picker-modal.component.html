@@ -9,13 +9,18 @@
 </ion-header>
 
 <ion-content>
-  <ion-datetime
-    [(ngModel)]="selectedDate"
-    [min]="minDate"
-    [max]="maxDate"
-    presentation="date"
-    [firstDayOfWeek]="1">
-  </ion-datetime>
+  <div class="datetime-container">
+    <ion-datetime
+      [(ngModel)]="selectedDate"
+      [min]="minDate"
+      [max]="maxDate"
+      presentation="date"
+      [preferWheel]="false"
+      [firstDayOfWeek]="1"
+      showDefaultButtons="false"
+      class="datetime-picker">
+    </ion-datetime>
+  </div>
 </ion-content>
 
 

@@ -1,6 +1,23 @@
-ion-datetime {
-  --background: var(--ion-color-light);
-  --background-rgb: var(--ion-color-light-rgb);
+.datetime-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px 16px;
 }
 
+.datetime-picker {
+  width: 100%;
+  max-width: 400px;
+  --background: white;
+  --background-rgb: 255, 255, 255;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 0 auto;
+}
 
+ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: white;
+}
