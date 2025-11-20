@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Selecione a Data</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+      <ion-button (click)="confirm()">Confirmar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-datetime
+    [(ngModel)]="selectedDate"
+    [min]="minDate"
+    [max]="maxDate"
+    presentation="date"
+    [firstDayOfWeek]="1">
+  </ion-datetime>
+</ion-content>
+
+

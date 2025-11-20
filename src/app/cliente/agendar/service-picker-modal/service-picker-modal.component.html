@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Selecione o Serviço</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Cancelar</ion-button>
+      <ion-button (click)="confirm()" [disabled]="!selectedService">Confirmar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="services-container">
+    @if (services.length > 0) {
+      <div class="services-list">
+        @for (service of services; track service.id) {
+          <ion-card
+            class="service-card"
+            [class.selected]="isSelected(service.id)"
+            (click)="selectService(service)">
+            <div class="service-content">
+              <div class="service-image-container">
+                @if (getServiceImage(service)) {
+                  <ion-img [src]="getServiceImage(service)!" [alt]="service.title" class="service-image-thumb"></ion-img>
+                } @else {
+                  <div class="service-icon">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                  </div>
+                }
+              </div>
+              <div class="service-details">
+                <h3 class="service-title">{{ service.title }}</h3>
+                <div class="service-info-compact">
+                  <span class="service-price">{{ formatPrice(service.price) }}</span>
+                  <span class="service-duration">{{ formatDuration(service.durationMinutes) }}</span>
+                </div>
+              </div>
+              @if (isSelected(service.id)) {
+                <div class="selected-indicator">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                </div>
+              }
+            </div>
+          </ion-card>
+        }
+      </div>
+    } @else {
+      <div class="empty-container">
+        <p>Nenhum serviço disponível</p>
+      </div>
+    }
+  </div>
+</ion-content>
+
+

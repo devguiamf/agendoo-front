@@ -1,0 +1,203 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Agendar Serviço</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (isLoading) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+      <p>Carregando informações...</p>
+    </div>
+  } @else if (store) {
+    <div class="agendar-container">
+      <ion-card class="store-card">
+        @if (getStoreImage(store)) {
+          <ion-img [src]="getStoreImage(store)!" [alt]="store.name" class="store-image"></ion-img>
+        } @else {
+          <div class="store-image-placeholder">
+            <ion-icon name="storefront-outline"></ion-icon>
+          </div>
+        }
+        <ion-card-header>
+          <ion-card-title>{{ store.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list lines="none" class="store-info">
+            <ion-item lines="none" class="info-item">
+              <ion-icon name="location-outline" slot="start" class="info-icon"></ion-icon>
+              <ion-label>
+                <h3>Endereço</h3>
+                <p>{{ formatAddress(store.location) }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-title>Selecione o Serviço</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @if (isLoadingServices) {
+            <div class="loading-small">
+              <ion-spinner></ion-spinner>
+              <p>Carregando serviços...</p>
+            </div>
+          } @else if (services.length > 0) {
+            <ion-button expand="block" fill="outline" (click)="openServiceModal()" class="service-button">
+              @if (selectedServiceId) {
+                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              } @else {
+                <ion-icon name="document-text-outline" slot="start"></ion-icon>
+              }
+              @if (selectedServiceId && getSelectedService(); as service) {
+                {{ service.title }} - {{ formatPrice(service.price) }}
+              } @else {
+                Selecione um serviço
+              }
+            </ion-button>
+            @if (selectedServiceId && getSelectedService(); as service) {
+              <div class="service-details">
+                <p class="service-description">{{ service.description }}</p>
+                <div class="service-info-summary">
+                  <span><ion-icon name="cash-outline"></ion-icon> {{ formatPrice(service.price) }}</span>
+                  <span><ion-icon name="time-outline"></ion-icon> {{ formatDuration(service.durationMinutes) }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <p class="empty-message">Nenhum serviço disponível neste estabelecimento.</p>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      @if (selectedServiceId) {
+        <ion-card class="form-card">
+          <ion-card-header>
+            <ion-card-title>Selecione a Data</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-button expand="block" fill="outline" (click)="openDateModal()" class="date-button">
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              @if (selectedDate) {
+                {{ formatDate(selectedDate) }}
+              } @else {
+                Selecione uma data
+              }
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (selectedServiceId && selectedDate && !isLoadingTimeSlots && availableTimeSlots.length > 0) {
+        <ion-card class="form-card">
+          <ion-card-header>
+            <ion-card-title>Selecione o Horário</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="time-slots-grid">
+              @for (slot of availableTimeSlots; track slot.startTime) {
+                <ion-button
+                  [fill]="selectedTimeSlot?.startTime === slot.startTime ? 'solid' : 'outline'"
+                  [color]="selectedTimeSlot?.startTime === slot.startTime ? 'primary' : 'medium'"
+                  (click)="onTimeSlotSelect(slot)"
+                  class="time-slot-button">
+                  {{ slot.startTime }}
+                </ion-button>
+              }
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (selectedServiceId && selectedDate && !isLoadingTimeSlots && availableTimeSlots.length === 0) {
+        <ion-card class="form-card">
+          <ion-card-content>
+            <p class="empty-message">Nenhum horário disponível para esta data.</p>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (isLoadingTimeSlots) {
+        <ion-card class="form-card">
+          <ion-card-content>
+            <div class="loading-small">
+              <ion-spinner></ion-spinner>
+              <p>Carregando horários disponíveis...</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      @if (selectedServiceId && selectedDate && selectedTimeSlot) {
+        <ion-card class="form-card">
+          <ion-card-header>
+            <ion-card-title>Observações (Opcional)</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-textarea
+              [(ngModel)]="notes"
+              placeholder="Adicione alguma observação sobre o agendamento..."
+              rows="4"
+              maxlength="500">
+            </ion-textarea>
+          </ion-card-content>
+        </ion-card>
+
+        @if (getSelectedService(); as service) {
+          <ion-card class="summary-card">
+            <ion-card-header>
+              <ion-card-title>Resumo do Agendamento</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list lines="none" class="summary-list">
+                <ion-item lines="none" class="summary-item">
+                  <ion-icon name="storefront-outline" slot="start" class="summary-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Estabelecimento</h3>
+                    <p>{{ store.name }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="summary-item">
+                  <ion-icon name="checkmark-circle-outline" slot="start" class="summary-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Serviço</h3>
+                    <p>{{ service.title }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="summary-item">
+                  <ion-icon name="calendar-outline" slot="start" class="summary-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Data</h3>
+                    <p>{{ formatDate(selectedDate) }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="summary-item">
+                  <ion-icon name="time-outline" slot="start" class="summary-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Horário</h3>
+                    <p>{{ selectedTimeSlot.startTime }} - {{ selectedTimeSlot.endTime }}</p>
+                  </ion-label>
+                </ion-item>
+                <ion-item lines="none" class="summary-item">
+                  <ion-icon name="cash-outline" slot="start" class="summary-icon"></ion-icon>
+                  <ion-label>
+                    <h3>Valor</h3>
+                    <p>{{ formatPrice(service.price) }}</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+              <ion-button expand="block" (click)="confirmAppointment()" class="confirm-button">
+                Confirmar Agendamento
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        }
+      }
+    </div>
+  }
+</ion-content>
+

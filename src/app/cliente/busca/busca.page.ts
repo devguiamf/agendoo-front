@@ -9,11 +9,7 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonItem,
-  IonLabel,
-  IonButton,
   IonIcon,
-  IonList,
   IonSpinner,
   IonImg,
   IonSearchbar,
@@ -45,11 +41,7 @@ import { Router } from '@angular/router';
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    IonItem,
-    IonLabel,
-    IonButton,
     IonIcon,
-    IonList,
     IonSpinner,
     IonImg,
     IonSearchbar,
@@ -85,12 +77,15 @@ export class ClienteBuscaPage implements OnInit {
   }
 
   public onStoreClick(store: StoreOutput): void {
-    // TODO: Implementar navegação para detalhes do estabelecimento
-    console.log('Store clicked:', store.id);
+    this.router.navigate(['/cliente/agendar', store.id]);
   }
 
   public formatAddress(location: StoreOutput['location']): string {
     return `${location.street}, ${location.number} - ${location.neighborhood}, ${location.city} - ${location.state}`;
+  }
+
+  public formatAddressCompact(location: StoreOutput['location']): string {
+    return `${location.neighborhood}, ${location.city}`;
   }
 
   public getWorkingHoursToday(store: StoreOutput): string {
@@ -108,7 +103,7 @@ export class ClienteBuscaPage implements OnInit {
 
   private async loadStores(): Promise<void> {
     this.isLoading = true;
-    this.storeService.getAll().subscribe({
+    this.storeService.getAll(this.searchTerm).subscribe({
       next: (stores) => {
         this.stores = stores;
         this.filteredStores = stores;
@@ -123,17 +118,7 @@ export class ClienteBuscaPage implements OnInit {
   }
 
   private filterStores(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredStores = this.stores;
-      return;
-    }
-    const term = this.searchTerm.toLowerCase().trim();
-    this.filteredStores = this.stores.filter(
-      (store) =>
-        store.name.toLowerCase().includes(term) ||
-        store.location.city.toLowerCase().includes(term) ||
-        store.location.neighborhood.toLowerCase().includes(term),
-    );
+    this.loadStores();
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {

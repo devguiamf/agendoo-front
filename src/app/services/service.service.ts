@@ -63,6 +63,10 @@ export class ServiceService {
     return this.http.get<ServiceOutput>(`${this.apiUrl}/${id}`);
   }
 
+  public getByStoreId(storeId: string): Observable<ServiceOutput[]> {
+    return this.http.get<ServiceOutput[]>(`${this.apiUrl}/store/${storeId}`);
+  }
+
   public create(createDto: CreateServiceDto, file?: File): Observable<ServiceOutput> {
     const formData = new FormData();
     formData.append('title', createDto.title);

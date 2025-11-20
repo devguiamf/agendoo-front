@@ -22,6 +22,11 @@ export const routes: Routes = [
           import('../perfil/perfil.page').then((m) => m.ClientePerfilPage),
       },
       {
+        path: 'agendar/:id',
+        loadComponent: () =>
+          import('../agendar/agendar.page').then((m) => m.ClienteAgendarPage),
+      },
+      {
         path: '',
         redirectTo: '/cliente/busca',
         pathMatch: 'full',
