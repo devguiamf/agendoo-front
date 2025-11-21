@@ -5,6 +5,9 @@ export enum AppointmentStatus {
   CANCELLED = 'cancelled',
 }
 
+import { StoreOutput } from './store.types';
+import { ServiceOutput } from './service.types';
+
 export interface AppointmentOutput {
   id: string;
   userId: string;
@@ -15,6 +18,8 @@ export interface AppointmentOutput {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
+  store?: StoreOutput;
+  service?: ServiceOutput;
 }
 
 export interface AvailableTimeSlot {

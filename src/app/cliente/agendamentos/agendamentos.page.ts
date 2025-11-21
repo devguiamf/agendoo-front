@@ -26,16 +26,16 @@ import {
   locationOutline,
   documentTextOutline,
   closeCircleOutline,
-  trashOutline,
   checkmarkCircleOutline,
   storefrontOutline,
+  logoWhatsapp,
 } from 'ionicons/icons';
 import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentOutput, AppointmentStatus } from '../../models/appointment.types';
-import { StoreService } from '../../services/store.service';
-import { ServiceService } from '../../services/service.service';
+import { UserService } from '../../services/user.service';
 import { StoreOutput } from '../../models/store.types';
 import { ServiceOutput } from '../../models/service.types';
+import { UserOutput } from '../../models/user.types';
 
 @Component({
   selector: 'app-cliente-agendamentos',
@@ -62,14 +62,12 @@ import { ServiceOutput } from '../../models/service.types';
 export class ClienteAgendamentosPage implements OnInit {
   public appointments: AppointmentOutput[] = [];
   public activeAppointments: AppointmentOutput[] = [];
-  public stores: Map<string, StoreOutput> = new Map();
-  public services: Map<string, ServiceOutput> = new Map();
+  public storeOwners: Map<string, UserOutput> = new Map();
   public isLoading: boolean = false;
 
   constructor(
     private readonly appointmentService: AppointmentService,
-    private readonly storeService: StoreService,
-    private readonly serviceService: ServiceService,
+    private readonly userService: UserService,
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
     private readonly loadingController: LoadingController,
@@ -80,9 +78,9 @@ export class ClienteAgendamentosPage implements OnInit {
       locationOutline,
       documentTextOutline,
       closeCircleOutline,
-      trashOutline,
       checkmarkCircleOutline,
       storefrontOutline,
+      logoWhatsapp,
     });
   }
 
@@ -141,16 +139,16 @@ export class ClienteAgendamentosPage implements OnInit {
     return `${this.formatDate(date)} às ${this.formatTime(date)}`;
   }
 
-  public getStoreName(storeId: string): string {
-    return this.stores.get(storeId)?.name || 'Estabelecimento não encontrado';
+  public getStoreName(appointment: AppointmentOutput): string {
+    return appointment.store?.name || 'Estabelecimento não encontrado';
   }
 
-  public getServiceName(serviceId: string): string {
-    return this.services.get(serviceId)?.title || 'Serviço não encontrado';
+  public getServiceName(appointment: AppointmentOutput): string {
+    return appointment.service?.title || 'Serviço não encontrado';
   }
 
-  public getStoreAddress(storeId: string): string {
-    const store = this.stores.get(storeId);
+  public getStoreAddress(appointment: AppointmentOutput): string {
+    const store = appointment.store;
     if (!store) {
       return '';
     }
@@ -165,46 +163,60 @@ export class ClienteAgendamentosPage implements OnInit {
   }
 
   public async handleCancel(appointment: AppointmentOutput): Promise<void> {
+    const store = appointment.store;
+    const storeOwner = store ? this.storeOwners.get(store.userId) : null;
+    const phone = storeOwner?.phone;
+    const storeName = store?.name || 'o estabelecimento';
+    const message = phone
+      ? `Para solicitar o cancelamento do agendamento de ${this.formatDateTime(appointment.appointmentDate)}, entre em contato com ${storeName} via WhatsApp.`
+      : `Para solicitar o cancelamento do agendamento de ${this.formatDateTime(appointment.appointmentDate)}, entre em contato com ${storeName}.`;
     const alert = await this.alertController.create({
-      header: 'Confirmar Cancelamento',
-      message: `Tem certeza que deseja cancelar o agendamento de ${this.formatDateTime(appointment.appointmentDate)}?`,
+      header: 'Solicitar Cancelamento',
+      message,
       buttons: [
         {
-          text: 'Não',
+          text: 'Fechar',
           role: 'cancel',
         },
-        {
-          text: 'Sim, Cancelar',
-          role: 'destructive',
-          handler: async () => {
-            await this.cancelAppointment(appointment.id);
-          },
-        },
+        ...(phone
+          ? [
+              {
+                text: 'Abrir WhatsApp',
+                handler: () => {
+                  this.openWhatsApp(phone, appointment);
+                },
+              },
+            ]
+          : []),
       ],
     });
     await alert.present();
   }
 
-  public async handleDelete(appointment: AppointmentOutput): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Confirmar Exclusão',
-      message: `Tem certeza que deseja excluir permanentemente este agendamento?`,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel',
-        },
-        {
-          text: 'Excluir',
-          role: 'destructive',
-          handler: async () => {
-            await this.deleteAppointment(appointment.id);
-          },
-        },
-      ],
-    });
-    await alert.present();
+  public openWhatsApp(phone: string, appointment: AppointmentOutput): void {
+    const storeName = this.getStoreName(appointment);
+    const serviceName = this.getServiceName(appointment);
+    const dateTime = this.formatDateTime(appointment.appointmentDate);
+    const message = encodeURIComponent(
+      `Olá! Gostaria de solicitar o cancelamento do meu agendamento:\n\n` +
+        `Serviço: ${serviceName}\n` +
+        `Data e Hora: ${dateTime}\n\n` +
+        `Por favor, confirme o cancelamento.`,
+    );
+    const cleanPhone = phone.replace(/\D/g, '');
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
   }
+
+  public getStorePhone(appointment: AppointmentOutput): string | null {
+    const store = appointment.store;
+    if (!store) {
+      return null;
+    }
+    const storeOwner = this.storeOwners.get(store.userId);
+    return storeOwner?.phone || null;
+  }
+
 
   private async loadAppointments(): Promise<void> {
     this.isLoading = true;
@@ -216,7 +228,7 @@ export class ClienteAgendamentosPage implements OnInit {
             apt.status === AppointmentStatus.PENDING ||
             apt.status === AppointmentStatus.CONFIRMED,
         );
-        await this.loadStoresAndServices(appointments);
+        await this.loadStoreOwners(appointments);
         this.isLoading = false;
       },
       error: async (error) => {
@@ -227,70 +239,32 @@ export class ClienteAgendamentosPage implements OnInit {
     });
   }
 
-  private async loadStoresAndServices(appointments: AppointmentOutput[]): Promise<void> {
-    const storeIds = [...new Set(appointments.map((apt) => apt.storeId))];
-    const serviceIds = [...new Set(appointments.map((apt) => apt.serviceId))];
-    for (const storeId of storeIds) {
-      try {
-        this.storeService.getById(storeId).subscribe({
-          next: (store) => {
-            this.stores.set(storeId, store);
-          },
-        });
-      } catch (error) {
-        console.error(`Error loading store ${storeId}:`, error);
+  private async loadStoreOwners(appointments: AppointmentOutput[]): Promise<void> {
+    const userIds = new Set<string>();
+    appointments.forEach((apt) => {
+      if (apt.store?.userId) {
+        userIds.add(apt.store.userId);
       }
-    }
-    for (const serviceId of serviceIds) {
-      try {
-        this.serviceService.getById(serviceId).subscribe({
-          next: (service) => {
-            this.services.set(serviceId, service);
-          },
-        });
-      } catch (error) {
-        console.error(`Error loading service ${serviceId}:`, error);
+    });
+    for (const userId of userIds) {
+      if (!this.storeOwners.has(userId)) {
+        try {
+          this.userService.getById(userId).subscribe({
+            next: (user) => {
+              this.storeOwners.set(userId, user);
+            },
+            error: (error) => {
+              console.error(`Error loading store owner ${userId}:`, error);
+            },
+          });
+        } catch (error) {
+          console.error(`Error loading store owner ${userId}:`, error);
+        }
       }
     }
   }
 
-  private async cancelAppointment(id: string): Promise<void> {
-    const loading = await this.loadingController.create({
-      message: 'Cancelando...',
-    });
-    await loading.present();
-    this.appointmentService.cancel(id).subscribe({
-      next: async () => {
-        await loading.dismiss();
-        await this.loadAppointments();
-        await this.showToast('Agendamento cancelado com sucesso!', 'success');
-      },
-      error: async (error) => {
-        await loading.dismiss();
-        const errorMessage = error.error?.message || 'Erro ao cancelar agendamento';
-        await this.showToast(errorMessage, 'danger');
-      },
-    });
-  }
 
-  private async deleteAppointment(id: string): Promise<void> {
-    const loading = await this.loadingController.create({
-      message: 'Excluindo...',
-    });
-    await loading.present();
-    this.appointmentService.delete(id).subscribe({
-      next: async () => {
-        await loading.dismiss();
-        await this.loadAppointments();
-        await this.showToast('Agendamento excluído com sucesso!', 'success');
-      },
-      error: async (error) => {
-        await loading.dismiss();
-        const errorMessage = error.error?.message || 'Erro ao excluir agendamento';
-        await this.showToast(errorMessage, 'danger');
-      },
-    });
-  }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
     const toast = await this.toastController.create({

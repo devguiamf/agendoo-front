@@ -112,11 +112,23 @@ export class ClienteAgendarPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    const storeId = this.route.snapshot.paramMap.get('id');
-    if (storeId) {
-      this.loadStore(storeId);
-      this.loadServices(storeId);
-    }
+    this.resetForm();
+    this.route.paramMap.subscribe((params) => {
+      const storeId = params.get('id');
+      if (storeId) {
+        this.resetForm();
+        this.loadStore(storeId);
+        this.loadServices(storeId);
+      }
+    });
+  }
+
+  private resetForm(): void {
+    this.selectedServiceId = '';
+    this.selectedDate = '';
+    this.selectedTimeSlot = null;
+    this.notes = '';
+    this.availableTimeSlots = [];
   }
 
   public async openServiceModal(): Promise<void> {

@@ -17,7 +17,7 @@
           <ion-card class="appointment-card">
             <ion-card-header>
               <div class="card-header-content">
-                <ion-card-title>{{ getServiceName(appointment.serviceId) }}</ion-card-title>
+                <ion-card-title>{{ getServiceName(appointment) }}</ion-card-title>
                 <ion-badge [color]="getStatusColor(appointment.status)">
                   {{ getStatusLabel(appointment.status) }}
                 </ion-badge>
@@ -36,14 +36,14 @@
                   <ion-icon name="storefront-outline" slot="start" class="info-icon"></ion-icon>
                   <ion-label>
                     <h3>Estabelecimento</h3>
-                    <p>{{ getStoreName(appointment.storeId) }}</p>
+                    <p>{{ getStoreName(appointment) }}</p>
                   </ion-label>
                 </ion-item>
                 <ion-item lines="none" class="info-item">
                   <ion-icon name="location-outline" slot="start" class="info-icon"></ion-icon>
                   <ion-label>
                     <h3>Endereço</h3>
-                    <p>{{ getStoreAddress(appointment.storeId) }}</p>
+                    <p>{{ getStoreAddress(appointment) }}</p>
                   </ion-label>
                 </ion-item>
                 @if (appointment.notes) {
@@ -58,15 +58,17 @@
               </ion-list>
               <div class="appointment-actions">
                 @if (canCancel(appointment)) {
-                  <ion-button fill="outline" color="warning" size="small" (click)="handleCancel(appointment)">
+                  <ion-button expand="block" fill="outline" color="warning" (click)="handleCancel(appointment)">
                     <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-                    Cancelar
+                    Solicitar Cancelamento
                   </ion-button>
                 }
-                <ion-button fill="outline" color="danger" size="small" (click)="handleDelete(appointment)">
-                  <ion-icon name="trash-outline" slot="start"></ion-icon>
-                  Excluir
-                </ion-button>
+                @if (getStorePhone(appointment); as phone) {
+                  <ion-button expand="block" fill="outline" color="success" (click)="openWhatsApp(phone, appointment)">
+                    <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+                    WhatsApp
+                  </ion-button>
+                }
               </div>
             </ion-card-content>
           </ion-card>
