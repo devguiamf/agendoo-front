@@ -52,43 +52,15 @@
       <ion-input
         type="text"
         placeholder="000.000.000-00"
-        [(ngModel)]="editForm.cpf"
+        [ngModel]="editForm.cpf"
+        (ionInput)="onCpfInput($event)"
+        maxlength="14"
         name="cpf"
       ></ion-input>
     </ion-item>
 
-    <ion-item>
-      <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-      <ion-label position="stacked">Nova Senha (opcional)</ion-label>
-      <ion-input
-        type="password"
-        placeholder="Deixe em branco para manter a senha atual"
-        [(ngModel)]="newPassword"
-        (ionInput)="validatePasswords()"
-        name="newPassword"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item [class.error]="passwordMismatch">
-      <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-      <ion-label position="stacked">Confirmar Nova Senha</ion-label>
-      <ion-input
-        type="password"
-        placeholder="Confirme a nova senha"
-        [(ngModel)]="confirmPassword"
-        (ionInput)="validatePasswords()"
-        name="confirmPassword"
-      ></ion-input>
-    </ion-item>
-
-    @if (passwordMismatch) {
-      <div class="error-message">
-        As senhas não coincidem
-      </div>
-    }
-
     <div class="form-actions">
-      <ion-button expand="block" type="submit" [disabled]="isLoading || passwordMismatch">
+      <ion-button expand="block" type="submit" [disabled]="isLoading">
         {{ isLoading ? 'Salvando...' : 'Salvar Alterações' }}
       </ion-button>
       <ion-button expand="block" fill="outline" (click)="handleCancel()" [disabled]="isLoading">

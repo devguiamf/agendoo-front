@@ -61,11 +61,13 @@
             @if (selectedRegisterType === 'prestador') {
               <ion-item class="form-item">
                 <ion-icon name="document-text-outline" slot="start"></ion-icon>
-                <ion-label position="stacked">CPF/CNPJ</ion-label>
+                <ion-label position="stacked">CPF</ion-label>
                 <ion-input
                   type="text"
-                  placeholder="000.000.000-00 ou 00.000.000/0000-00"
-                  [(ngModel)]="cpfCnpj"
+                  placeholder="000.000.000-00"
+                  [ngModel]="cpfCnpj"
+                  (ionInput)="onCpfInput($event)"
+                  maxlength="14"
                   required
                   name="cpfCnpj"
                 ></ion-input>

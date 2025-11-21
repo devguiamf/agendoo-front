@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, delay } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ServiceOutput, CreateServiceDto, UpdateServiceDto } from '../models/service.types';
 
@@ -9,42 +9,6 @@ import { ServiceOutput, CreateServiceDto, UpdateServiceDto } from '../models/ser
 })
 export class ServiceService {
   private readonly apiUrl = `${environment.apiUrl}/services`;
-  private useMockData = true;
-  private mockServices: ServiceOutput[] = [
-    {
-      id: 'service-1',
-      title: 'Corte de Cabelo Masculino',
-      description: 'Corte de cabelo moderno com técnicas profissionais',
-      price: 50.0,
-      durationMinutes: 30,
-      storeId: 'store-1',
-      imageUrl: 'https://via.placeholder.com/400x300?text=Corte+Cabelo',
-      createdAt: new Date('2024-01-15'),
-      updatedAt: new Date('2024-12-01'),
-    },
-    {
-      id: 'service-2',
-      title: 'Barba Completa',
-      description: 'Aparar e modelar barba com toalha quente e finalização',
-      price: 35.0,
-      durationMinutes: 25,
-      storeId: 'store-2',
-      imageUrl: 'https://via.placeholder.com/400x300?text=Barba',
-      createdAt: new Date('2024-02-10'),
-      updatedAt: new Date('2024-11-15'),
-    },
-    {
-      id: 'service-3',
-      title: 'Tatuagem Pequena',
-      description: 'Tatuagem de até 10cm com design personalizado',
-      price: 200.0,
-      durationMinutes: 60,
-      storeId: 'store-3',
-      imageUrl: 'https://via.placeholder.com/400x300?text=Tatuagem',
-      createdAt: new Date('2024-03-20'),
-      updatedAt: new Date('2024-12-05'),
-    },
-  ];
 
   constructor(private readonly http: HttpClient) {}
 
@@ -53,13 +17,6 @@ export class ServiceService {
   }
 
   public getById(id: string): Observable<ServiceOutput> {
-    if (this.useMockData) {
-      const service = this.mockServices.find((s) => s.id === id);
-      if (!service) {
-        throw new Error('Service not found');
-      }
-      return of(service).pipe(delay(300));
-    }
     return this.http.get<ServiceOutput>(`${this.apiUrl}/${id}`);
   }
 
@@ -107,12 +64,6 @@ export class ServiceService {
 
   public delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  public uploadImage(id: string, file: File): Observable<ServiceOutput> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<ServiceOutput>(`${this.apiUrl}/${id}/upload-image`, formData);
   }
 }
 

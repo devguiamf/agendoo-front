@@ -28,7 +28,9 @@ import {
   createOutline,
   calendarOutline,
   timeOutline,
+  logOutOutline,
 } from 'ionicons/icons';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService, UpdateUserDto } from '../../services/user.service';
 import { UserOutput } from '../../models/user.types';
@@ -61,6 +63,7 @@ export class ClientePerfilPage implements OnInit {
   public isLoading: boolean = false;
 
   constructor(
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly modalController: ModalController,
@@ -75,6 +78,7 @@ export class ClientePerfilPage implements OnInit {
       createOutline,
       calendarOutline,
       timeOutline,
+      logOutOutline,
     });
   }
 
@@ -117,6 +121,28 @@ export class ClientePerfilPage implements OnInit {
       return `(${phone.substring(0, 2)}) ${phone.substring(2, 7)}-${phone.substring(7)}`;
     }
     return phone;
+  }
+
+  public formatCpf(cpf?: string): string {
+    if (!cpf) {
+      return 'Não informado';
+    }
+    const cleanCpf = cpf.replace(/\D/g, '');
+    if (cleanCpf.length === 11) {
+      return `${cleanCpf.substring(0, 3)}.${cleanCpf.substring(3, 6)}.${cleanCpf.substring(6, 9)}-${cleanCpf.substring(9)}`;
+    }
+    return cpf;
+  }
+
+  public async handleLogout(): Promise<void> {
+    const alert = await this.toastController.create({
+      message: 'Saindo...',
+      duration: 1000,
+      position: 'top',
+    });
+    await alert.present();
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   private async loadUserData(): Promise<void> {

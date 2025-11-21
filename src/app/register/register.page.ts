@@ -83,6 +83,26 @@ export class RegisterPage {
     this.resetForm();
   }
 
+  public onCpfInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+    let formattedValue = value;
+    if (value.length <= 11) {
+      if (value.length > 9) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6, 9)}-${value.substring(9)}`;
+      } else if (value.length > 6) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6)}`;
+      } else if (value.length > 3) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3)}`;
+      }
+    }
+    this.cpfCnpj = formattedValue;
+    input.value = formattedValue;
+  }
+
   public validatePasswords(): void {
     this.passwordMismatch = this.password !== this.confirmPassword && this.confirmPassword.length > 0;
   }

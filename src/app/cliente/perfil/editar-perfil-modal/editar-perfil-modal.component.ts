@@ -22,7 +22,6 @@ import {
   mailOutline,
   callOutline,
   documentTextOutline,
-  lockClosedOutline,
 } from 'ionicons/icons';
 import { UserService, UpdateUserDto } from '../../../services/user.service';
 import { UserOutput } from '../../../models/user.types';
@@ -53,9 +52,6 @@ export class EditarPerfilModalComponent implements OnInit {
     phone: '',
     cpf: '',
   };
-  public newPassword: string = '';
-  public confirmPassword: string = '';
-  public passwordMismatch: boolean = false;
   public isLoading: boolean = false;
 
   constructor(
@@ -70,40 +66,52 @@ export class EditarPerfilModalComponent implements OnInit {
       mailOutline,
       callOutline,
       documentTextOutline,
-      lockClosedOutline,
     });
   }
 
   public ngOnInit(): void {
+    const cpf = this.user.cpf || '';
+    const formattedCpf = cpf ? this.formatCpfForDisplay(cpf) : '';
     this.editForm = {
       name: this.user.name || '',
       email: this.user.email || '',
       phone: this.user.phone || '',
-      cpf: this.user.cpf || '',
+      cpf: formattedCpf,
     };
   }
 
-  public validatePasswords(): void {
-    this.passwordMismatch =
-      this.newPassword !== this.confirmPassword && this.confirmPassword.length > 0;
+  private formatCpfForDisplay(cpf: string): string {
+    const cleanCpf = cpf.replace(/\D/g, '');
+    if (cleanCpf.length === 11) {
+      return `${cleanCpf.substring(0, 3)}.${cleanCpf.substring(3, 6)}.${cleanCpf.substring(6, 9)}-${cleanCpf.substring(9)}`;
+    }
+    return cpf;
+  }
+
+  public onCpfInput(event: any): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+    let formattedValue = value;
+    if (value.length <= 11) {
+      if (value.length > 9) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6, 9)}-${value.substring(9)}`;
+      } else if (value.length > 6) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3, 6)}.${value.substring(6)}`;
+      } else if (value.length > 3) {
+        formattedValue = `${value.substring(0, 3)}.${value.substring(3)}`;
+      }
+    }
+    this.editForm.cpf = formattedValue;
+    input.value = formattedValue;
   }
 
   public async handleSave(): Promise<void> {
     if (!this.editForm.name || !this.editForm.email) {
       await this.showToast('Nome e e-mail são obrigatórios', 'warning');
       return;
-    }
-    if (this.newPassword) {
-      if (this.newPassword.length < 6) {
-        await this.showToast('A senha deve ter no mínimo 6 caracteres', 'warning');
-        return;
-      }
-      if (this.newPassword !== this.confirmPassword) {
-        this.passwordMismatch = true;
-        await this.showToast('As senhas não coincidem', 'warning');
-        return;
-      }
-      this.editForm.password = this.newPassword;
     }
     const loading = await this.loadingController.create({
       message: 'Salvando...',
@@ -115,7 +123,6 @@ export class EditarPerfilModalComponent implements OnInit {
       email: this.editForm.email,
       phone: this.editForm.phone || undefined,
       cpf: this.editForm.cpf || undefined,
-      password: this.editForm.password,
     };
     this.userService.update(this.user.id, updateDto).subscribe({
       next: async () => {

@@ -17,13 +17,7 @@ import {
   IonList,
   IonSpinner,
   IonImg,
-  IonSelect,
-  IonSelectOption,
-  IonDatetimeButton,
-  IonModal,
-  IonDatetime,
   IonTextarea,
-  IonButtons,
   ToastController,
   LoadingController,
   ModalController,
@@ -331,7 +325,6 @@ export class ClienteAgendarPage implements OnInit {
         },
       });
   }
-
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
     const toast = await this.toastController.create({

@@ -60,7 +60,7 @@
               <ion-icon name="document-text-outline" slot="start" class="info-icon"></ion-icon>
               <ion-label>
                 <h3>CPF</h3>
-                <p>{{ user.cpf || 'Não informado' }}</p>
+                <p>{{ formatCpf(user.cpf) }}</p>
               </ion-label>
             </ion-item>
           </ion-list>
@@ -89,6 +89,15 @@
               </ion-label>
             </ion-item>
           </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="info-card">
+        <ion-card-content>
+          <ion-button expand="block" fill="outline" color="danger" (click)="handleLogout()">
+            <ion-icon name="log-out-outline" slot="start"></ion-icon>
+            Sair
+          </ion-button>
         </ion-card-content>
       </ion-card>
     </div>

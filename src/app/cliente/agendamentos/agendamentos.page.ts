@@ -22,13 +22,10 @@ import {
 import { addIcons } from 'ionicons';
 import {
   calendarOutline,
-  timeOutline,
   locationOutline,
   documentTextOutline,
   closeCircleOutline,
-  checkmarkCircleOutline,
   storefrontOutline,
-  logoWhatsapp,
 } from 'ionicons/icons';
 import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentOutput, AppointmentStatus } from '../../models/appointment.types';
@@ -74,13 +71,10 @@ export class ClienteAgendamentosPage implements OnInit {
   ) {
     addIcons({
       calendarOutline,
-      timeOutline,
       locationOutline,
       documentTextOutline,
       closeCircleOutline,
-      checkmarkCircleOutline,
       storefrontOutline,
-      logoWhatsapp,
     });
   }
 
@@ -208,16 +202,6 @@ export class ClienteAgendamentosPage implements OnInit {
     window.open(whatsappUrl, '_blank');
   }
 
-  public getStorePhone(appointment: AppointmentOutput): string | null {
-    const store = appointment.store;
-    if (!store) {
-      return null;
-    }
-    const storeOwner = this.storeOwners.get(store.userId);
-    return storeOwner?.phone || null;
-  }
-
-
   private async loadAppointments(): Promise<void> {
     this.isLoading = true;
     this.appointmentService.getAll().subscribe({
@@ -263,8 +247,6 @@ export class ClienteAgendamentosPage implements OnInit {
       }
     }
   }
-
-
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
     const toast = await this.toastController.create({

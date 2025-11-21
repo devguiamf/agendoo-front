@@ -70,11 +70,5 @@ export class StoreService {
   public delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-
-  public uploadImage(id: string, file: File): Observable<StoreOutput> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<StoreOutput>(`${this.apiUrl}/${id}/upload-image`, formData);
-  }
 }
 
