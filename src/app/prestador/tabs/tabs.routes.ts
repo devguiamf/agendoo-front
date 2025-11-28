@@ -22,9 +22,9 @@ export const routes: Routes = [
           import('../perfil/perfil.page').then((m) => m.PrestadorPerfilPage),
       },
       {
-        path: 'configuracoes',
+        path: 'loja',
         loadComponent: () =>
-          import('../configuracoes/configuracoes.page').then((m) => m.PrestadorConfiguracoesPage),
+          import('../loja/loja.page').then((m) => m.PrestadorLojaPage),
       },
       {
         path: '',

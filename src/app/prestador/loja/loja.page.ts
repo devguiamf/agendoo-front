@@ -28,6 +28,7 @@ import {
   createOutline,
   addOutline,
   imageOutline,
+  alertCircleOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth.service';
 import { StoreService } from '../../services/store.service';
@@ -35,9 +36,9 @@ import { StoreOutput } from '../../models/store.types';
 import { EditarLojaModalComponent } from './editar-loja-modal/editar-loja-modal.component';
 
 @Component({
-  selector: 'app-prestador-configuracoes',
-  templateUrl: './configuracoes.page.html',
-  styleUrls: ['./configuracoes.page.scss'],
+  selector: 'app-prestador-loja',
+  templateUrl: './loja.page.html',
+  styleUrls: ['./loja.page.scss'],
   imports: [
     IonContent,
     IonHeader,
@@ -56,7 +57,7 @@ import { EditarLojaModalComponent } from './editar-loja-modal/editar-loja-modal.
     IonSpinner,
   ],
 })
-export class PrestadorConfiguracoesPage implements OnInit {
+export class PrestadorLojaPage implements OnInit {
   public store: StoreOutput | null = null;
   public isLoading: boolean = false;
   public hasStore: boolean = false;
@@ -76,6 +77,7 @@ export class PrestadorConfiguracoesPage implements OnInit {
       createOutline,
       addOutline,
       imageOutline,
+      alertCircleOutline,
     });
   }
 

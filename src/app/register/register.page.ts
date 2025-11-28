@@ -28,6 +28,7 @@ import {
   alertCircle,
 } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
+import { StoreService } from '../services/store.service';
 import { UserType } from '../models/user.types';
 
 @Component({
@@ -64,6 +65,7 @@ export class RegisterPage {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly storeService: StoreService,
     private readonly toastController: ToastController,
     private readonly loadingController: LoadingController,
   ) {
@@ -141,7 +143,7 @@ export class RegisterPage {
         await this.showToast('Cadastro realizado com sucesso!', 'success');
         const user = this.authService.getUser();
         if (user?.type === UserType.PRESTADOR) {
-          this.router.navigate(['/prestador/home']);
+          this.router.navigate(['/prestador/loja']);
         } else if (user?.type === UserType.CLIENTE) {
           this.router.navigate(['/cliente/busca']);
         } else {

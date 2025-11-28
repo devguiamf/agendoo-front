@@ -18,6 +18,7 @@ import {
 import { addIcons } from 'ionicons';
 import { logInOutline, lockClosedOutline, mailOutline } from 'ionicons/icons';
 import { AuthService } from '../services/auth.service';
+import { StoreService } from '../services/store.service';
 import { UserType } from '../models/user.types';
 
 @Component({
@@ -46,6 +47,7 @@ export class LoginPage {
   constructor(
     private readonly router: Router,
     private readonly authService: AuthService,
+    private readonly storeService: StoreService,
     private readonly toastController: ToastController,
     private readonly loadingController: LoadingController,
   ) {
@@ -68,7 +70,7 @@ export class LoginPage {
         this.isLoading = false;
         await this.showToast('Login realizado com sucesso!', 'success');
         if (response.user.type === UserType.PRESTADOR) {
-          this.router.navigate(['/prestador/home']);
+          await this.redirectPrestador(response.user.id);
         } else if (response.user.type === UserType.CLIENTE) {
           this.router.navigate(['/cliente/busca']);
         } else {
@@ -80,6 +82,21 @@ export class LoginPage {
         this.isLoading = false;
         const errorMessage = error.error?.message || 'Erro ao fazer login. Verifique suas credenciais.';
         await this.showToast(errorMessage, 'danger');
+      },
+    });
+  }
+
+  private async redirectPrestador(userId: string): Promise<void> {
+    this.storeService.getByUserId(userId).subscribe({
+      next: () => {
+        this.router.navigate(['/prestador/home']);
+      },
+      error: (error) => {
+        if (error.status === 404) {
+          this.router.navigate(['/prestador/loja']);
+        } else {
+          this.router.navigate(['/prestador/home']);
+        }
       },
     });
   }

@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Configurações</ion-title>
+    <ion-title>Loja</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,7 +8,7 @@
   @if (isLoading) {
     <div class="loading-container">
       <ion-spinner></ion-spinner>
-      <p>Carregando configurações...</p>
+      <p>Carregando dados da loja...</p>
     </div>
   } @else if (hasStore && store) {
     <div class="store-container">
@@ -123,15 +123,29 @@
     </div>
   } @else {
     <div class="no-store-container">
+      <ion-card class="warning-card">
+        <ion-card-header>
+          <ion-card-title class="warning-title">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            Atenção
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="warning-content">
+            <p class="warning-message">Você precisa cadastrar uma loja antes de poder criar serviços e receber agendamentos.</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
       <ion-card class="empty-card">
         <ion-card-header>
-          <ion-card-title>Nenhuma Loja Cadastrada</ion-card-title>
+          <ion-card-title>Cadastre sua Loja</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <div class="empty-content">
             <ion-icon name="storefront-outline" class="empty-icon"></ion-icon>
             <p>Você ainda não possui uma loja cadastrada.</p>
-            <p class="empty-description">Crie sua loja para começar a receber agendamentos.</p>
+            <p class="empty-description">Crie sua loja para começar a cadastrar serviços e receber agendamentos.</p>
             <ion-button expand="block" (click)="openCreateModal()" class="create-button">
               <ion-icon name="add-outline" slot="start"></ion-icon>
               Criar Loja
