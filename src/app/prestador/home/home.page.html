@@ -1,25 +1,215 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Dashboard</ion-title>
+    <ion-title>Agendamentos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Dashboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-  <div class="container">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Agendamentos do Dia</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Informações dos agendamentos do dia serão exibidas aqui.</p>
-      </ion-card-content>
-    </ion-card>
-  </div>
+  @if (isLoading) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+      <p>Carregando agendamentos...</p>
+    </div>
+  } @else if (!hasStore) {
+    <div class="no-store-container">
+      <ion-card class="warning-card">
+        <ion-card-header>
+          <ion-card-title class="warning-title">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            Loja não cadastrada
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Você precisa cadastrar uma loja para visualizar seus agendamentos.</p>
+          <ion-button expand="block" routerLink="/prestador/loja" class="mt-16">
+            Cadastrar Loja
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  } @else {
+    <div class="appointments-container">
+      <!-- Date Navigation -->
+      <div class="date-navigation">
+        <ion-button fill="clear" (click)="previousDay()" [disabled]="showFutureAppointments">
+          <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <div class="date-display" (click)="goToToday()">
+          @if (showFutureAppointments) {
+            <span class="date-text">Próximos Agendamentos</span>
+          } @else {
+            <span class="date-text">{{ formatDate(selectedDate) }}</span>
+            @if (!isToday()) {
+              <ion-chip color="primary" class="today-chip">
+                <ion-icon name="today-outline"></ion-icon>
+                Ir para hoje
+              </ion-chip>
+            }
+          }
+        </div>
+        <ion-button fill="clear" (click)="nextDay()" [disabled]="showFutureAppointments">
+          <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Toggle Future Appointments -->
+      <div class="future-toggle">
+        <ion-button
+          [fill]="showFutureAppointments ? 'solid' : 'outline'"
+          size="small"
+          (click)="toggleFutureAppointments()"
+        >
+          <ion-icon name="calendar-outline" slot="start"></ion-icon>
+          {{ showFutureAppointments ? 'Ver por dia' : 'Ver todos futuros' }}
+        </ion-button>
+      </div>
+
+      <!-- Status Summary -->
+      <div class="status-summary">
+        <div class="status-item">
+          <ion-badge color="warning">{{ pendingCount }}</ion-badge>
+          <span>Pendentes</span>
+        </div>
+        <div class="status-item">
+          <ion-badge color="primary">{{ confirmedCount }}</ion-badge>
+          <span>Confirmados</span>
+        </div>
+        <div class="status-item">
+          <ion-badge color="success">{{ completedCount }}</ion-badge>
+          <span>Concluídos</span>
+        </div>
+        <div class="status-item">
+          <ion-badge color="danger">{{ cancelledCount }}</ion-badge>
+          <span>Cancelados</span>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <ion-segment [value]="selectedStatus" (ionChange)="onStatusFilterChange($event)">
+        <ion-segment-button value="all">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="pending">
+          <ion-label>Pendentes</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="confirmed">
+          <ion-label>Confirmados</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="completed">
+          <ion-label>Concluídos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="cancelled">
+          <ion-label>Cancelados</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Appointments List -->
+      @if (filteredAppointments.length === 0) {
+        <div class="empty-state">
+          <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+          <p>Nenhum agendamento encontrado</p>
+          <p class="empty-subtitle">
+            @if (selectedStatus !== 'all') {
+              Tente mudar o filtro de status
+            } @else if (showFutureAppointments) {
+              Não há agendamentos futuros
+            } @else {
+              Não há agendamentos para esta data
+            }
+          </p>
+        </div>
+      } @else {
+        <ion-list class="appointments-list">
+          @for (appointment of filteredAppointments; track appointment.id) {
+            <ion-card class="appointment-card">
+              <ion-card-header>
+                <div class="appointment-header">
+                  <div class="time-badge">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span>{{ formatTime(appointment.appointmentDate) }}</span>
+                  </div>
+                  <ion-chip [color]="getStatusColor(appointment.status)" class="status-chip">
+                    <ion-icon [name]="getStatusIcon(appointment.status)"></ion-icon>
+                    {{ getStatusLabel(appointment.status) }}
+                  </ion-chip>
+                </div>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="appointment-details">
+                  <div class="detail-row">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <span class="client-name">{{ appointment.user?.name || 'Cliente' }}</span>
+                  </div>
+                  @if (appointment.user?.phone) {
+                    <div class="detail-row">
+                      <span class="client-phone">{{ appointment.user?.phone }}</span>
+                    </div>
+                  }
+                  <div class="detail-row service-row">
+                    <span class="service-name">{{ appointment.service?.title || 'Serviço' }}</span>
+                    <span class="service-price">{{ formatPrice(appointment.service?.price || 0) }}</span>
+                  </div>
+                  @if (appointment.notes) {
+                    <div class="detail-row notes-row">
+                      <span class="notes">{{ appointment.notes }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Action Buttons -->
+                @if (appointment.status === 'pending') {
+                  <div class="action-buttons">
+                    <ion-button
+                      fill="solid"
+                      color="primary"
+                      size="small"
+                      (click)="confirmAppointment(appointment)"
+                    >
+                      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                      Confirmar
+                    </ion-button>
+                    <ion-button
+                      fill="outline"
+                      color="danger"
+                      size="small"
+                      (click)="cancelAppointment(appointment)"
+                    >
+                      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                      Cancelar
+                    </ion-button>
+                  </div>
+                }
+                @if (appointment.status === 'confirmed') {
+                  <div class="action-buttons">
+                    <ion-button
+                      fill="solid"
+                      color="success"
+                      size="small"
+                      (click)="completeAppointment(appointment)"
+                    >
+                      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                      Concluir
+                    </ion-button>
+                    <ion-button
+                      fill="outline"
+                      color="danger"
+                      size="small"
+                      (click)="cancelAppointment(appointment)"
+                    >
+                      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                      Cancelar
+                    </ion-button>
+                  </div>
+                }
+              </ion-card-content>
+            </ion-card>
+          }
+        </ion-list>
+      }
+    </div>
+  }
 </ion-content>
-

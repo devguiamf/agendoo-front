@@ -7,6 +7,7 @@ export enum AppointmentStatus {
 
 import { StoreOutput } from './store.types';
 import { ServiceOutput } from './service.types';
+import { UserOutput } from './user.types';
 
 export interface AppointmentOutput {
   id: string;
@@ -20,6 +21,7 @@ export interface AppointmentOutput {
   updatedAt: Date;
   store?: StoreOutput;
   service?: ServiceOutput;
+  user?: UserOutput;
 }
 
 export interface AvailableTimeSlot {

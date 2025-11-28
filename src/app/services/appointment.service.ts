@@ -53,5 +53,35 @@ export class AppointmentService {
   public delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  public getMyStoreAppointments(options?: {
+    date?: string;
+    status?: AppointmentStatus;
+    includeFuture?: boolean;
+  }): Observable<AppointmentOutput[]> {
+    let params = new HttpParams();
+    if (options?.date) {
+      params = params.set('date', options.date);
+    }
+    if (options?.status) {
+      params = params.set('status', options.status);
+    }
+    if (options?.includeFuture) {
+      params = params.set('includeFuture', 'true');
+    }
+    return this.http.get<AppointmentOutput[]>(`${this.apiUrl}/my-store`, { params });
+  }
+
+  public complete(id: string): Observable<AppointmentOutput> {
+    return this.http.put<AppointmentOutput>(`${this.apiUrl}/${id}`, {
+      status: AppointmentStatus.COMPLETED,
+    });
+  }
+
+  public confirm(id: string): Observable<AppointmentOutput> {
+    return this.http.put<AppointmentOutput>(`${this.apiUrl}/${id}`, {
+      status: AppointmentStatus.CONFIRMED,
+    });
+  }
 }
 
