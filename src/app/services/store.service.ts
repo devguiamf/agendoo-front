@@ -35,9 +35,6 @@ export class StoreService {
     formData.append('workingHours', JSON.stringify(createDto.workingHours));
     formData.append('location', JSON.stringify(createDto.location));
     formData.append('appointmentInterval', createDto.appointmentInterval.toString());
-    if (createDto.imageUrl && !file) {
-      formData.append('imageUrl', createDto.imageUrl);
-    }
     if (file) {
       formData.append('file', file);
     }
@@ -57,9 +54,6 @@ export class StoreService {
     }
     if (updateDto.appointmentInterval !== undefined) {
       formData.append('appointmentInterval', updateDto.appointmentInterval.toString());
-    }
-    if (updateDto.imageUrl && !file) {
-      formData.append('imageUrl', updateDto.imageUrl);
     }
     if (file) {
       formData.append('file', file);

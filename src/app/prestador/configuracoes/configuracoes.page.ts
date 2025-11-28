@@ -156,7 +156,7 @@ export class PrestadorConfiguracoesPage implements OnInit {
   }
 
   public getStoreImage(store: StoreOutput): string | null {
-    return store.imageBase64 || store.imageUrl || null;
+    return store.imageBase64 || null;
   }
 
   private async loadStoreData(): Promise<void> {

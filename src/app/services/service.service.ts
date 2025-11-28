@@ -30,9 +30,6 @@ export class ServiceService {
     formData.append('description', createDto.description);
     formData.append('price', createDto.price.toString());
     formData.append('durationMinutes', createDto.durationMinutes.toString());
-    if (createDto.imageUrl && !file) {
-      formData.append('imageUrl', createDto.imageUrl);
-    }
     if (file) {
       formData.append('file', file);
     }
@@ -52,9 +49,6 @@ export class ServiceService {
     }
     if (updateDto.durationMinutes !== undefined) {
       formData.append('durationMinutes', updateDto.durationMinutes.toString());
-    }
-    if (updateDto.imageUrl && !file) {
-      formData.append('imageUrl', updateDto.imageUrl);
     }
     if (file) {
       formData.append('file', file);

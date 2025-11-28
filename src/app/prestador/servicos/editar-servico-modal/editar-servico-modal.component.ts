@@ -22,7 +22,6 @@ import {
   cashOutline,
   timeOutline,
   imageOutline,
-  linkOutline,
 } from 'ionicons/icons';
 import { ServiceService } from '../../../services/service.service';
 import {
@@ -57,7 +56,6 @@ export class EditarServicoModalComponent implements OnInit {
     description: '',
     price: 0,
     durationMinutes: 30,
-    imageUrl: '',
   };
   public isLoading: boolean = false;
   public selectedImageFile: File | null = null;
@@ -75,7 +73,6 @@ export class EditarServicoModalComponent implements OnInit {
       cashOutline,
       timeOutline,
       imageOutline,
-      linkOutline,
     });
   }
 
@@ -87,10 +84,9 @@ export class EditarServicoModalComponent implements OnInit {
         description: this.service.description || '',
         price: this.service.price || 0,
         durationMinutes: this.service.durationMinutes || 30,
-        imageUrl: this.service.imageUrl || '',
       };
-      if (this.service.imageUrl) {
-        this.imagePreview = this.service.imageUrl;
+      if (this.service.imageBase64) {
+        this.imagePreview = this.service.imageBase64;
       }
     }
   }
@@ -110,7 +106,6 @@ export class EditarServicoModalComponent implements OnInit {
         description: this.serviceForm.description,
         price: this.serviceForm.price,
         durationMinutes: this.serviceForm.durationMinutes,
-        imageUrl: this.selectedImageFile ? undefined : (this.serviceForm.imageUrl || undefined),
       };
       this.serviceService.update(this.service.id, updateDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
@@ -131,7 +126,6 @@ export class EditarServicoModalComponent implements OnInit {
         description: this.serviceForm.description,
         price: this.serviceForm.price,
         durationMinutes: this.serviceForm.durationMinutes,
-        imageUrl: this.selectedImageFile ? undefined : (this.serviceForm.imageUrl || undefined),
       };
       this.serviceService.create(createDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
@@ -155,7 +149,6 @@ export class EditarServicoModalComponent implements OnInit {
       const file = input.files[0];
       if (file.type.startsWith('image/')) {
         this.selectedImageFile = file;
-        this.serviceForm.imageUrl = '';
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imagePreview = e.target?.result as string;
@@ -170,7 +163,7 @@ export class EditarServicoModalComponent implements OnInit {
 
   public removeSelectedImage(): void {
     this.selectedImageFile = null;
-    this.imagePreview = this.serviceForm.imageUrl || null;
+    this.imagePreview = null;
   }
 
   public async handleCancel(): Promise<void> {

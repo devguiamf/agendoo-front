@@ -31,7 +31,6 @@ export interface StoreOutput {
   workingHours: WorkingHours[];
   location: Location;
   appointmentInterval: AppointmentInterval;
-  imageUrl?: string;
   imageBase64?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -43,7 +42,6 @@ export interface CreateStoreDto {
   workingHours: WorkingHours[];
   location: Location;
   appointmentInterval: AppointmentInterval;
-  imageUrl?: string;
 }
 
 export interface UpdateStoreDto {
@@ -51,6 +49,5 @@ export interface UpdateStoreDto {
   workingHours?: WorkingHours[];
   location?: Location;
   appointmentInterval?: AppointmentInterval;
-  imageUrl?: string;
 }
 

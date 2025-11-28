@@ -228,7 +228,7 @@ export class ClienteAgendarPage implements OnInit {
   }
 
   public getStoreImage(store: StoreOutput): string | null {
-    return store.imageBase64 || store.imageUrl || null;
+    return store.imageBase64 || null;
   }
 
   public getSelectedService(): ServiceOutput | null {

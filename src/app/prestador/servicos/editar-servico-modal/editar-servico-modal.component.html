@@ -87,18 +87,6 @@
       </div>
     }
 
-    <ion-item>
-      <ion-icon name="link-outline" slot="start"></ion-icon>
-      <ion-label position="stacked">Ou URL da Imagem (opcional)</ion-label>
-      <ion-input
-        type="url"
-        placeholder="https://exemplo.com/imagem.jpg"
-        [(ngModel)]="serviceForm.imageUrl"
-        name="imageUrl"
-        [disabled]="!!selectedImageFile"
-      ></ion-input>
-    </ion-item>
-
     <div class="form-actions">
       <ion-button expand="block" type="submit" [disabled]="isLoading">
         {{ isLoading ? 'Salvando...' : (isEditMode ? 'Salvar Alterações' : 'Criar Serviço') }}

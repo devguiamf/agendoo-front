@@ -4,7 +4,6 @@ export interface ServiceOutput {
   description: string;
   price: number;
   durationMinutes: number;
-  imageUrl?: string;
   imageBase64?: string;
   storeId: string;
   createdAt: Date;
@@ -16,7 +15,6 @@ export interface CreateServiceDto {
   description: string;
   price: number;
   durationMinutes: number;
-  imageUrl?: string;
 }
 
 export interface UpdateServiceDto {
@@ -24,6 +22,5 @@ export interface UpdateServiceDto {
   description?: string;
   price?: number;
   durationMinutes?: number;
-  imageUrl?: string;
 }
 

@@ -48,18 +48,6 @@
     }
 
     <ion-item>
-      <ion-icon name="link-outline" slot="start"></ion-icon>
-      <ion-label position="stacked">Ou URL da Imagem (opcional)</ion-label>
-      <ion-input
-        type="url"
-        placeholder="https://exemplo.com/imagem.jpg"
-        [(ngModel)]="storeForm.imageUrl"
-        name="imageUrl"
-        [disabled]="!!selectedImageFile"
-      ></ion-input>
-    </ion-item>
-
-    <ion-item>
       <ion-icon name="time-outline" slot="start"></ion-icon>
       <ion-label position="stacked">Intervalo entre Agendamentos</ion-label>
       <ion-select [(ngModel)]="storeForm.appointmentInterval" name="appointmentInterval">

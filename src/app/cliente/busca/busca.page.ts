@@ -98,7 +98,7 @@ export class ClienteBuscaPage implements OnInit {
   }
 
   public getStoreImage(store: StoreOutput): string | null {
-    return store.imageBase64 || store.imageUrl || null;
+    return store.imageBase64 || null;
   }
 
   private async loadStores(): Promise<void> {

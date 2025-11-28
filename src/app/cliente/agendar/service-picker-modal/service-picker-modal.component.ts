@@ -81,7 +81,7 @@ export class ServicePickerModalComponent {
   }
 
   public getServiceImage(service: ServiceOutput): string | null {
-    return service.imageBase64 || service.imageUrl || null;
+    return service.imageBase64 || null;
   }
 }
 

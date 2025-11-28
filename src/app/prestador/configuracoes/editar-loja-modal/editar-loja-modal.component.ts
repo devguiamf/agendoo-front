@@ -26,7 +26,6 @@ import {
   timeOutline,
   calendarOutline,
   imageOutline,
-  linkOutline,
 } from 'ionicons/icons';
 import { StoreService } from '../../../services/store.service';
 import {
@@ -77,7 +76,6 @@ export class EditarLojaModalComponent implements OnInit {
       zipCode: '',
     },
     appointmentInterval: AppointmentInterval.THIRTY_MINUTES,
-    imageUrl: '',
   };
   public isLoading: boolean = false;
   public selectedImageFile: File | null = null;
@@ -112,7 +110,6 @@ export class EditarLojaModalComponent implements OnInit {
       timeOutline,
       calendarOutline,
       imageOutline,
-      linkOutline,
     });
   }
 
@@ -129,10 +126,9 @@ export class EditarLojaModalComponent implements OnInit {
         workingHours: this.store.workingHours.map((wh) => ({ ...wh })),
         location: { ...this.store.location },
         appointmentInterval: this.store.appointmentInterval,
-        imageUrl: this.store.imageUrl || '',
       };
-      if (this.store.imageUrl) {
-        this.imagePreview = this.store.imageUrl;
+      if (this.store.imageBase64) {
+        this.imagePreview = this.store.imageBase64;
       }
     } else {
       this.storeForm.userId = currentUser.id;
@@ -181,7 +177,6 @@ export class EditarLojaModalComponent implements OnInit {
         workingHours: this.storeForm.workingHours,
         location: this.storeForm.location,
         appointmentInterval: this.storeForm.appointmentInterval,
-        imageUrl: this.selectedImageFile ? undefined : (this.storeForm.imageUrl || undefined),
       };
       this.storeService.update(this.store.id, updateDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
@@ -203,7 +198,6 @@ export class EditarLojaModalComponent implements OnInit {
         workingHours: this.storeForm.workingHours,
         location: this.storeForm.location,
         appointmentInterval: this.storeForm.appointmentInterval,
-        imageUrl: this.selectedImageFile ? undefined : (this.storeForm.imageUrl || undefined),
       };
       this.storeService.create(createDto, this.selectedImageFile || undefined).subscribe({
         next: async () => {
@@ -227,7 +221,6 @@ export class EditarLojaModalComponent implements OnInit {
       const file = input.files[0];
       if (file.type.startsWith('image/')) {
         this.selectedImageFile = file;
-        this.storeForm.imageUrl = '';
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imagePreview = e.target?.result as string;
@@ -242,7 +235,7 @@ export class EditarLojaModalComponent implements OnInit {
 
   public removeSelectedImage(): void {
     this.selectedImageFile = null;
-    this.imagePreview = this.storeForm.imageUrl || null;
+    this.imagePreview = null;
   }
 
   public async handleCancel(): Promise<void> {
