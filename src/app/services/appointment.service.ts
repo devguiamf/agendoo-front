@@ -8,6 +8,7 @@ import {
   UpdateAppointmentDto,
   AppointmentStatus,
   AvailableTimeSlot,
+  StoreStatistics,
 } from '../models/appointment.types';
 
 @Injectable({
@@ -72,16 +73,14 @@ export class AppointmentService {
     return this.http.get<AppointmentOutput[]>(`${this.apiUrl}/my-store`, { params });
   }
 
-  public complete(id: string): Observable<AppointmentOutput> {
-    return this.http.put<AppointmentOutput>(`${this.apiUrl}/${id}`, {
-      status: AppointmentStatus.COMPLETED,
-    });
-  }
-
   public confirm(id: string): Observable<AppointmentOutput> {
     return this.http.put<AppointmentOutput>(`${this.apiUrl}/${id}`, {
       status: AppointmentStatus.CONFIRMED,
     });
+  }
+
+  public getMyStoreStatistics(): Observable<StoreStatistics> {
+    return this.http.get<StoreStatistics>(`${this.apiUrl}/my-store/statistics`);
   }
 }
 

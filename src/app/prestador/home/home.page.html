@@ -33,6 +33,85 @@
     </div>
   } @else {
     <div class="appointments-container">
+      <!-- Statistics Cards -->
+      @if (statistics) {
+        <div class="stats-grid">
+          <div class="stat-card revenue-card">
+            <div class="stat-icon">
+              <ion-icon name="wallet-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-value">{{ formatCurrency(statistics.todayRevenue) }}</span>
+              <span class="stat-label">Faturamento Hoje</span>
+            </div>
+          </div>
+
+          <div class="stat-card week-card">
+            <div class="stat-icon">
+              <ion-icon name="trending-up-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-value">{{ formatCurrency(statistics.weekRevenue) }}</span>
+              <span class="stat-label">Faturamento Semana</span>
+            </div>
+          </div>
+
+          <div class="stat-card clients-card">
+            <div class="stat-icon">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-value">{{ statistics.monthlyClients }}</span>
+              <span class="stat-label">Clientes no Mês</span>
+            </div>
+          </div>
+
+          <div class="stat-card progress-card">
+            <div class="stat-icon">
+              <ion-icon name="stats-chart-outline"></ion-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-value">{{ statistics.confirmationRate }}%</span>
+              <span class="stat-label">Taxa de Confirmação</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day Progress Bar -->
+        <div class="day-progress-container">
+          <div class="progress-header">
+            <span class="progress-title">Progresso do Dia</span>
+            <span class="progress-count">{{ statistics.todayConfirmed }}/{{ statistics.todayTotal }} confirmados</span>
+          </div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar">
+              <div 
+                class="progress-fill confirmed" 
+                [style.width.%]="statistics.todayTotal > 0 ? (statistics.todayConfirmed / statistics.todayTotal) * 100 : 0"
+              ></div>
+              <div 
+                class="progress-fill pending" 
+                [style.width.%]="statistics.todayTotal > 0 ? (statistics.todayPending / statistics.todayTotal) * 100 : 0"
+              ></div>
+            </div>
+          </div>
+          <div class="progress-legend">
+            <div class="legend-item">
+              <span class="legend-dot confirmed"></span>
+              <span>Confirmados ({{ statistics.todayConfirmed }})</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot pending"></span>
+              <span>Pendentes ({{ statistics.todayPending }})</span>
+            </div>
+          </div>
+        </div>
+      } @else if (isLoadingStats) {
+        <div class="stats-loading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      }
+
       <!-- Date Navigation -->
       <div class="date-navigation">
         <ion-button fill="clear" (click)="previousDay()" [disabled]="showFutureAppointments">
@@ -46,7 +125,7 @@
             @if (!isToday()) {
               <ion-chip color="primary" class="today-chip">
                 <ion-icon name="today-outline"></ion-icon>
-                Ir para hoje
+                 Ir para hoje
               </ion-chip>
             }
           }
@@ -75,12 +154,8 @@
           <span>Pendentes</span>
         </div>
         <div class="status-item">
-          <ion-badge color="primary">{{ confirmedCount }}</ion-badge>
+          <ion-badge color="success">{{ confirmedCount }}</ion-badge>
           <span>Confirmados</span>
-        </div>
-        <div class="status-item">
-          <ion-badge color="success">{{ completedCount }}</ion-badge>
-          <span>Concluídos</span>
         </div>
         <div class="status-item">
           <ion-badge color="danger">{{ cancelledCount }}</ion-badge>
@@ -98,9 +173,6 @@
         </ion-segment-button>
         <ion-segment-button value="confirmed">
           <ion-label>Confirmados</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="completed">
-          <ion-label>Concluídos</ion-label>
         </ion-segment-button>
         <ion-segment-button value="cancelled">
           <ion-label>Cancelados</ion-label>
@@ -171,28 +243,6 @@
                     >
                       <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
                       Confirmar
-                    </ion-button>
-                    <ion-button
-                      fill="outline"
-                      color="danger"
-                      size="small"
-                      (click)="cancelAppointment(appointment)"
-                    >
-                      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-                      Cancelar
-                    </ion-button>
-                  </div>
-                }
-                @if (appointment.status === 'confirmed') {
-                  <div class="action-buttons">
-                    <ion-button
-                      fill="solid"
-                      color="success"
-                      size="small"
-                      (click)="completeAppointment(appointment)"
-                    >
-                      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                      Concluir
                     </ion-button>
                     <ion-button
                       fill="outline"

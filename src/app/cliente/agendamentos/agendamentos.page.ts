@@ -87,8 +87,6 @@ export class ClienteAgendamentosPage implements OnInit {
       case AppointmentStatus.PENDING:
         return 'warning';
       case AppointmentStatus.CONFIRMED:
-        return 'primary';
-      case AppointmentStatus.COMPLETED:
         return 'success';
       case AppointmentStatus.CANCELLED:
         return 'danger';
@@ -103,8 +101,6 @@ export class ClienteAgendamentosPage implements OnInit {
         return 'Pendente';
       case AppointmentStatus.CONFIRMED:
         return 'Confirmado';
-      case AppointmentStatus.COMPLETED:
-        return 'Concluído';
       case AppointmentStatus.CANCELLED:
         return 'Cancelado';
       default:

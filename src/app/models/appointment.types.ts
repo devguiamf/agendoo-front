@@ -1,7 +1,6 @@
 export enum AppointmentStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
-  COMPLETED = 'completed',
   CANCELLED = 'cancelled',
 }
 
@@ -41,5 +40,16 @@ export interface UpdateAppointmentDto {
   appointmentDate?: string;
   status?: AppointmentStatus;
   notes?: string;
+}
+
+export interface StoreStatistics {
+  todayRevenue: number;
+  weekRevenue: number;
+  monthlyClients: number;
+  todayTotal: number;
+  todayPending: number;
+  todayConfirmed: number;
+  todayCancelled: number;
+  confirmationRate: number;
 }
 

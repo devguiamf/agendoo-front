@@ -38,11 +38,15 @@ import {
   todayOutline,
   cashOutline,
   alertCircleOutline,
+  walletOutline,
+  trendingUpOutline,
+  peopleOutline,
+  statsChartOutline,
 } from 'ionicons/icons';
 import { AppointmentService } from '../../services/appointment.service';
 import { StoreService } from '../../services/store.service';
 import { AuthService } from '../../services/auth.service';
-import { AppointmentOutput, AppointmentStatus } from '../../models/appointment.types';
+import { AppointmentOutput, AppointmentStatus, StoreStatistics } from '../../models/appointment.types';
 
 type FilterStatus = 'all' | AppointmentStatus;
 
@@ -82,6 +86,8 @@ export class PrestadorHomePage implements OnInit {
   public selectedDate: Date = new Date();
   public selectedStatus: FilterStatus = 'all';
   public showFutureAppointments: boolean = false;
+  public statistics: StoreStatistics | null = null;
+  public isLoadingStats: boolean = false;
 
   constructor(
     private readonly appointmentService: AppointmentService,
@@ -103,6 +109,10 @@ export class PrestadorHomePage implements OnInit {
       todayOutline,
       cashOutline,
       alertCircleOutline,
+      walletOutline,
+      trendingUpOutline,
+      peopleOutline,
+      statsChartOutline,
     });
   }
 
@@ -111,8 +121,15 @@ export class PrestadorHomePage implements OnInit {
   }
 
   public async handleRefresh(event: any): Promise<void> {
-    await this.loadAppointments();
+    await Promise.all([this.loadAppointments(), this.loadStatistics()]);
     event.target.complete();
+  }
+
+  public formatCurrency(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
   }
 
   public previousDay(): void {
@@ -181,7 +198,6 @@ export class PrestadorHomePage implements OnInit {
     const labels: Record<AppointmentStatus, string> = {
       [AppointmentStatus.PENDING]: 'Pendente',
       [AppointmentStatus.CONFIRMED]: 'Confirmado',
-      [AppointmentStatus.COMPLETED]: 'Concluído',
       [AppointmentStatus.CANCELLED]: 'Cancelado',
     };
     return labels[status] || status;
@@ -190,8 +206,7 @@ export class PrestadorHomePage implements OnInit {
   public getStatusColor(status: AppointmentStatus): string {
     const colors: Record<AppointmentStatus, string> = {
       [AppointmentStatus.PENDING]: 'warning',
-      [AppointmentStatus.CONFIRMED]: 'primary',
-      [AppointmentStatus.COMPLETED]: 'success',
+      [AppointmentStatus.CONFIRMED]: 'success',
       [AppointmentStatus.CANCELLED]: 'danger',
     };
     return colors[status] || 'medium';
@@ -201,7 +216,6 @@ export class PrestadorHomePage implements OnInit {
     const icons: Record<AppointmentStatus, string> = {
       [AppointmentStatus.PENDING]: 'hourglass-outline',
       [AppointmentStatus.CONFIRMED]: 'checkmark-circle-outline',
-      [AppointmentStatus.COMPLETED]: 'checkmark-circle-outline',
       [AppointmentStatus.CANCELLED]: 'close-circle-outline',
     };
     return icons[status] || 'alert-circle-outline';
@@ -215,9 +229,6 @@ export class PrestadorHomePage implements OnInit {
     return this.appointments.filter((a) => a.status === AppointmentStatus.CONFIRMED).length;
   }
 
-  public get completedCount(): number {
-    return this.appointments.filter((a) => a.status === AppointmentStatus.COMPLETED).length;
-  }
 
   public get cancelledCount(): number {
     return this.appointments.filter((a) => a.status === AppointmentStatus.CANCELLED).length;
@@ -232,21 +243,6 @@ export class PrestadorHomePage implements OnInit {
         {
           text: 'Confirmar',
           handler: () => this.updateAppointmentStatus(appointment.id, 'confirm'),
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  public async completeAppointment(appointment: AppointmentOutput): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Concluir Agendamento',
-      message: `Deseja marcar o agendamento de ${appointment.user?.name || 'Cliente'} como concluído?`,
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Concluir',
-          handler: () => this.updateAppointmentStatus(appointment.id, 'complete'),
         },
       ],
     });
@@ -279,12 +275,26 @@ export class PrestadorHomePage implements OnInit {
       next: () => {
         this.hasStore = true;
         this.loadAppointments();
+        this.loadStatistics();
       },
       error: (error) => {
         if (error.status === 404) {
           this.hasStore = false;
         }
         this.isLoading = false;
+      },
+    });
+  }
+
+  private loadStatistics(): void {
+    this.isLoadingStats = true;
+    this.appointmentService.getMyStoreStatistics().subscribe({
+      next: (stats) => {
+        this.statistics = stats;
+        this.isLoadingStats = false;
+      },
+      error: () => {
+        this.isLoadingStats = false;
       },
     });
   }
@@ -321,7 +331,7 @@ export class PrestadorHomePage implements OnInit {
 
   private async updateAppointmentStatus(
     id: string,
-    action: 'confirm' | 'complete' | 'cancel',
+    action: 'confirm' | 'cancel',
   ): Promise<void> {
     const loading = await this.loadingController.create({
       message: 'Atualizando...',
@@ -333,10 +343,6 @@ export class PrestadorHomePage implements OnInit {
       case 'confirm':
         observable = this.appointmentService.confirm(id);
         successMessage = 'Agendamento confirmado!';
-        break;
-      case 'complete':
-        observable = this.appointmentService.complete(id);
-        successMessage = 'Agendamento concluído!';
         break;
       case 'cancel':
         observable = this.appointmentService.cancel(id);
