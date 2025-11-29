@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+www/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Android/iOS
+android/
+ios/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Capacitor
+capacitor.config.json
+
+# Documentation
+*.md
+!README.md
+
