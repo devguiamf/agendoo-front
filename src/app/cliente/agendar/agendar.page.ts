@@ -180,11 +180,12 @@ export class ClienteAgendarPage implements OnInit {
     if (!date) {
       return '';
     }
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    // Se já estiver no formato YYYY-MM-DD, retorna diretamente
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date;
+    }
+    // Caso contrário, extrai a parte da data da string ISO
+    return date.split('T')[0];
   }
 
   public onTimeSlotSelect(slot: AvailableTimeSlot): void {
@@ -214,7 +215,9 @@ export class ClienteAgendarPage implements OnInit {
     if (!date) {
       return '';
     }
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    // Parseia a data manualmente para evitar problemas de fuso horário
+    const [year, month, day] = date.split('T')[0].split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day);
     return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: '2-digit',
