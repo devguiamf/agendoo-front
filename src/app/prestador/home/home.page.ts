@@ -354,6 +354,7 @@ export class PrestadorHomePage implements OnInit {
         await loading.dismiss();
         await this.showToast(successMessage, 'success');
         await this.loadAppointments();
+        this.loadStatistics();
       },
       error: async (error) => {
         await loading.dismiss();
