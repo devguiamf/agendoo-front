@@ -8,7 +8,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Argumento para URL da API (pode ser sobrescrito no build)
-ARG API_URL=http://localhost:3000
+ARG API_URL=http://82.25.65.149:3000
 
 # Copia arquivos de dependências
 COPY package*.json ./
@@ -20,7 +20,7 @@ RUN npm ci
 COPY . .
 
 # Substitui a URL da API no environment de produção
-RUN sed -i "s|https://api.agendoo.com|${API_URL}|g" src/environments/environment.prod.ts
+RUN sed -i "http://82.25.65.149:3000" src/environments/environment.prod.ts
 
 # Build da aplicação para produção
 RUN npm run build -- --configuration=production
@@ -51,7 +51,7 @@ EXPOSE 80
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://0.0.0.0:80/ || exit 1
 
 # Inicia nginx
 CMD ["nginx", "-g", "daemon off;"]

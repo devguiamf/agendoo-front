@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.agendoo.com',
+  apiUrl: 'http://82.25.65.149:3000',
 };
