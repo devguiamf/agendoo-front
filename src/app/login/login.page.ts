@@ -105,6 +105,10 @@ export class LoginPage {
     this.router.navigate(['/register']);
   }
 
+  public navigateToForgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
+
   private async showToast(message: string, color: 'success' | 'danger' | 'warning'): Promise<void> {
     const toast = await this.toastController.create({
       message,

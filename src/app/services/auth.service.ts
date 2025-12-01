@@ -5,6 +5,15 @@ import { environment } from '../../environments/environment';
 import { LoginDto, SignupDto, LoginOutput, SignupOutput, UserOutput } from '../models/user.types';
 import { StorageService } from './storage.service';
 
+interface VerifyTokenResponse {
+  valid: boolean;
+  email?: string;
+}
+
+interface MessageResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -46,6 +55,22 @@ export class AuthService {
 
   public isAuthenticated(): boolean {
     return this.storageService.isAuthenticated();
+  }
+
+  public requestPasswordReset(email: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.apiUrl}/request-password-reset`, { email });
+  }
+
+  public verifyResetToken(token: string): Observable<VerifyTokenResponse> {
+    return this.http.get<VerifyTokenResponse>(`${this.apiUrl}/verify-reset-token/${token}`);
+  }
+
+  public confirmPasswordReset(code: string, password: string, confirmPassword: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.apiUrl}/confirm-password-reset`, {
+      code,
+      password,
+      confirmPassword,
+    });
   }
 }
 

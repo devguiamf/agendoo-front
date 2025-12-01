@@ -122,6 +122,22 @@
   opacity: 0.5;
 }
 
+.forgot-password-link {
+  margin-top: 1rem;
+  text-align: center;
+
+  .link {
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
 .link-section {
   margin-top: 1.5rem;
   text-align: center;
